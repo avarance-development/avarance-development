@@ -58,6 +58,7 @@
               </li>
             </ul>
           </transition>
+          <div v-show="mobileNav" @click="toggleMobileNav" class="overlay" ></div>
       </nav>
   </header>
 </template>
@@ -149,11 +150,12 @@ header {
             flex-basis: 60%;
             white-space: nowrap;
             list-style: none;
-
+            
             .side-bar-header {
                 width: 100%;
                 background-color: #800000;
-                height: 100px;
+                min-height: 100px;
+                
                 img {
                     position: relative;
                     top: 25px;
@@ -172,6 +174,7 @@ header {
                 text-transform: uppercase;
                 margin-left: 16px;
                 font-family: inherit;
+                
                 &:hover {
                     color: #0081AB;
                 }
@@ -186,6 +189,7 @@ header {
             gap: 5px;
             flex-basis: 10%;
             transition: 0.5s ease all;
+            
             .icon {
                 cursor: pointer;
                 transition: 0.5s ease all;
@@ -195,13 +199,12 @@ header {
                 transform: rotate(180deg);
             }
             
-
             @media(max-width: 750px) {
                 flex-basis: 100%;
                 justify-content: flex-end;
             }
         }
-
+        
         .dropdown-nav {
             display: flex;
             flex-direction: column;
@@ -216,9 +219,14 @@ header {
             left: 0;
             
             li {
-                margin-left: 25%;
-                margin-top: 10%;
-                
+                padding-left: 25%;
+                padding-top: 10%;
+                padding-bottom: 10%;
+                padding-right: 96.5px;
+                overflow-x: hidden;
+                overflow-y: auto;
+                scroll-behavior: smooth;
+
                 .link {
                     color: #000;
                     display: table;
@@ -234,7 +242,7 @@ header {
                     height: 1.5px;
                     bottom: 0;
                     left: 0;
-                    background-color: #0081AB;
+                    background-color: #000;
                     transform-origin: bottom right;
                     transition: transform 0.25s ease-out;
                 }
@@ -245,6 +253,32 @@ header {
                     transform-origin: bottom left;
                 }
             }
+            
+            li::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            li::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+            
+            li::-webkit-scrollbar-thumb {
+                background: #888; 
+                border-radius: 2.5px;
+            }
+
+            li::-webkit-scrollbar-thumb:hover {
+                background: #555; 
+            }
+        }
+
+        .overlay {
+           position: fixed;
+           top: 0;
+           left: 250px;
+           height: 100vh;
+           width: calc(100vw - 250px);
+           z-index: 100;
         }
 
         .mobile-nav-enter-active,
