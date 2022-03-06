@@ -33,13 +33,9 @@ export default {
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
         color: #000000;
         font-weight: 700;
-        font-size: 26px;
+        font-size: 1.625rem;
         text-decoration: none;
         margin: 25px auto;
-
-        @media(max-width: 700px) {
-            font-size: 18px;
-        }
     }
 
     .header:after {
@@ -81,6 +77,7 @@ export default {
         width: 100%;
         height: 150px;
         background-color: rgba(0,0,0,0.6);
+        margin-bottom: 20px;
     }
 }
 </style>

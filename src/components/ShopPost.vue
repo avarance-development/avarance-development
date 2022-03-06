@@ -80,34 +80,29 @@ export default {
         .content-title {
             color: #000;
             text-transform: uppercase;
-            font-size: 32px;
+            font-size: 2rem;
             font-weight: 300;
             margin-bottom: 16px;
             
             @media(max-width: 700px) {
-                font-size: 24px;
                 margin-top: 12px;
                 margin-bottom: 8px;
             }
         }
 
         .content-preview {
-            font-size: 13px;
+            font-size: 1.23rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             color: gray;
-
-            @media(max-width: 700px) {
-                font-size: 12px;
-            }
         }
         
         .products-link {
             color: #000;
             display: inline-flex;
             text-decoration: none;
-            font-size: 18px;
+            font-size: 1.125rem;
             text-transform: uppercase;
             margin-top: 24px;
             border-bottom: 1px solid transparent;
@@ -120,12 +115,7 @@ export default {
             }
             
             @media(max-width: 700px) {
-                font-size: 12px;
                 margin-top: 16px;
-            }
-
-            @media(max-width: 900px) {
-                font-size: 14px;
             }
 
             .icon {

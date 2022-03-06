@@ -2,7 +2,9 @@
   <header :class="{'scrolled-nav': scrolledNav}" >
       <nav>
           <div class="branding">
+            <router-link class="link" :to="{ name: 'Home' }">
               <img src="@/assets/logo.png" alt="Logo">
+            </router-link>
           </div>
           <ul v-show="!mobile" class="navigation">
               <li>
@@ -19,7 +21,7 @@
                       Earrings
                   </router-link>
                   <router-link class="link" :to="{ name: '' }">
-                      About
+                      Contact
                   </router-link>
                   <router-link class="link" :to="{ name: '' }">
                       FAQ
@@ -50,7 +52,7 @@
                       Earrings
                   </router-link>
                   <router-link class="link" :to="{ name: '' }">
-                      About
+                      Contact
                   </router-link>
                   <router-link class="link" :to="{ name: '' }">
                       FAQ
@@ -141,6 +143,7 @@ header {
             img {
                 width: 50px;
                 transition: 0.5s ease all;
+                cursor: pointer;
             }
         }
 
@@ -168,7 +171,7 @@ header {
                 color: #fff;
                 list-style: none;
                 text-decoration: none;
-                font-size: 15px;
+                font-size: 0.9375rem;
                 transition: 0.5s ease all;
                 margin-right: 15px;
                 text-transform: uppercase;
