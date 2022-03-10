@@ -47,6 +47,7 @@ export default {
         left: 50%;
         position: absolute;
         border-bottom: black solid 3px;
+        cursor: default;
     }
     .grid {
         display: grid;

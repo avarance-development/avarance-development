@@ -36,7 +36,7 @@
             Pendants
         </router-link> 
       </div>
-      <div class="second">
+      <div class='second adj'>
         <router-link class="link" :to="{ name: '' }">
             Earrings
         </router-link>
@@ -47,16 +47,17 @@
             FAQ
         </router-link> 
       </div>
-      <div class="third">
-        <form class="email-form" action="">
-            <label class="sub" for="Subscription">Subscribe to Our Weekly Newsletter</label><br>
-            <div class="wrapper">
-              <input class="email" type="email" name="Subscription" id="Subscription">
-              <input class="btn" type="button" value="Submit">
-            </div>
-            <p>CopyRight 2022 All Rights Reserved</p>
-        </form>
-      </div>
+      <form class="email-form" @submit.prevent="subscribe">
+          <label class="sub" for="Subscription">Subscribe to Our Weekly Newsletter</label>
+          <div class="wrapper">
+              <input class="email" placeholder="example@email.com" type="email" name="Subscription" id="Subscription" v-model.lazy="email" autocomplete="off">
+              <button class="btn" type="submit">
+                Submit
+              </button>
+          </div>
+          <p class="success" v-show="!error && success">Success! Your email has been added.</p>
+          <p class="copyright">Copyright 2022 - All Rights Reserved</p>
+      </form>
   </footer>
 </template>
 
@@ -69,12 +70,28 @@ import TikTok from "../assets/Icons/Socials/tiktok.svg"
 
 export default {
     name: "Footer",
+    data() {
+        return {
+            email: "",
+            error: "",
+            success: false
+        }
+    },
     components: {
         YouTube,
         Twitter,
         Instagram,
         Facebook,
         TikTok
+    },
+    methods: {
+        subscribe() {
+            if (this.email) {
+                console.log('Subscribed ' + this.email);
+                this.success = true;
+                this.email = '';
+            }
+        }
     }
 }
 </script>
@@ -85,7 +102,7 @@ export default {
     display: flex;
     flex-direction: row;
     width: 100%;
-    min-height: 200px;
+    min-height: 250px;
     background-color: #000;
 
     @media(max-width: 700px) {
@@ -128,8 +145,9 @@ export default {
         }
     }
 
+
     .second {
-        flex-basis: 12.5%;
+        flex-basis: 10%;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -137,10 +155,8 @@ export default {
         padding-right: 10px;
 
         @media(max-width: 700px) {
-            position: relative;
+            display: flex;
             flex-direction: row;
-            justify-content: center;
-            align-items: center;
             margin: 0;
             padding: 0;
         }
@@ -151,7 +167,7 @@ export default {
             width: fit-content;
             margin: 0 auto 0 0;
             transition: 0.5s ease-in-out;
-
+            
             @media(max-width: 700px) {
                 margin: 0;
             }
@@ -161,87 +177,78 @@ export default {
             color: #0081AB;
         }
     }
-    .third {
-        flex-basis: 50%;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        
+
+    .adj {
         @media(max-width: 700px) {
-            flex-direction: column;
-            margin-top: 40px;
+            margin-left: -5px;
+        }
+    }
+
+    .email-form {
+        flex-basis: 55%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+
+        @media(max-width: 700px) {
+            gap: 10px;
         }
 
-        .email-form {
-            white-space: nowrap;
-            position: relative;
-            bottom: 20px;
-            .sub {
+        .sub {
+            color: #fff;
+            cursor: pointer;
+        }
+        .wrapper {
+            border: white solid 1px;
+            border-radius: 17px;
+            width: fit-content;
+            transition: 0.2s border;
+            transform: 0.1s ease-in-out border;
+
+            .email {
                 color: #fff;
+                text-align: start;
                 position: relative;
-                bottom: 5px;
-                left: 10px;
-                @media(max-width: 700px) {
-                    bottom: 15px;
-                }
-            }
-            .wrapper {
-                border: white solid 1px;
-                border-radius: 19px;
-                width: fit-content;
-                position: absolute;
-                transition: 0.2s border;
-                margin: 1px;
-                
-                @media(max-width: 700px) {
-                    position: relative;
-                    left: 10px;
-                }
-                .email {
-                    z-index: 1;
-                    color: #fff;
-                    text-align: start;
-                    border-radius: 0;
-                    left: 10px;
-                    position: relative;
-                    border: none;
-                    outline: none;
-                    width: 225px;
-                    height: 32px;
-                    bottom: 2.5px;
-                    background-color: #000;
-                    margin-top: 10px;
-                }
+                border: none;
+                outline: none;
+                width: 225px;
+                height: 32px;
+                background-color: #000;
+                margin-left: 10px;
+                margin-right: 2px;
+                caret-color: #fff;
 
-                .btn {
-                    position: relative;
-                    margin-left: 10px;
-                    z-index: 2;
-                    border-radius: 19px;
-                    width: 80px;
-                    height: 32px;
-                    top: -5px;
-                    border-left: black solid 1px;
-                    cursor: pointer;
-                    margin-right: 5px;
+                @media (max-width: 400px) {
+                    width: 150px;
                 }
-            }
-            .wrapper:focus-within {
-                border: white solid 2px;
-                margin: 0;
             }
 
-            p {
-                color: white;
+            .btn {
+                background-color: #fff;
+                border: #fff;
                 position: relative;
-                top: 60px;
-                left: 10px;
-                @media(max-width: 700px) {
-                    top: 10px;
-                    margin-bottom: 10px;
-                }
+                z-index: 2;
+                transform: scale(1.05);
+                border-radius: 17px;
+                width: 100px;
+                height: 36px;
+                border-left: black solid 1px;
+                cursor: pointer;
             }
+        }
+        .wrapper:focus-within {
+            border: white solid 2px;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .copyright {
+            color: white;
+            margin-bottom: 20px;
         }
     }
 }

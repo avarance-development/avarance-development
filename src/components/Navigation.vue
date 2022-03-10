@@ -220,7 +220,9 @@ header {
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2), 0 2px 4px -1px rgba(0,0,0,0.7);
             top: 0;
             left: 0;
-            
+            @media(max-width: 400px) {
+                max-width: 70vw;
+            }
             li {
                 padding-left: 25%;
                 padding-top: 10%;
@@ -282,6 +284,11 @@ header {
            height: 100vh;
            width: calc(100vw - 250px);
            z-index: 100;
+           cursor: pointer;
+           @media(max-width: 400px) {
+               left: 70vw;
+               width: 30vw;
+           }
         }
 
         .mobile-nav-enter-active,
