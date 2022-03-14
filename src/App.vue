@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <Navigation />
+    <Navigation v-if="!navigation"/>
     <router-view/>
-    <Footer />
+    <Footer v-if="!navigation"/>
   </div>
 </template>
 
@@ -11,10 +11,35 @@ import Navigation from "./components/Navigation.vue"
 import Footer from "./components/Footer.vue"
 
 export default {
+  name: "App",
+  data() {
+    return {
+      navigation: null,
+    }
+  },
   components: {
     Navigation,
     Footer,
   },
+  created() {
+    this.checkRoute();
+  },
+  methods: {
+    checkRoute() {
+      if (this.$route.name == "Login" || 
+        this.$route.name == "Register" || 
+        this.$route.name == "ResetPassword") {
+        this.navigation = true;
+      } else {
+        this.navigation = false;
+      }
+    }
+  },
+  watch: {
+    $route() {
+      this.checkRoute();
+    }
+  }
 }
 </script>
 

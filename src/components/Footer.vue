@@ -48,7 +48,7 @@
         </router-link> 
       </div>
       <form class="email-form" @submit.prevent="subscribe">
-          <label class="sub" for="Subscription">Subscribe to Our Weekly Newsletter</label>
+          <label class="sub" for="Subscription">Stay Updated with our Shop!</label>
           <div class="wrapper">
               <input class="email" placeholder="example@email.com" type="email" name="Subscription" id="Subscription" v-model.lazy="email" autocomplete="off">
               <button class="btn" type="submit">

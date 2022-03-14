@@ -29,7 +29,9 @@
               </li>
           </ul>
           <div class="icon-bar">
-            <Profile class="icon"/>
+            <router-link class="profile-link" :to="{ name: 'Login' }">
+                <Profile class="icon" :to="{ name: 'Login'}" />
+            </router-link>
             <Cart class="icon"/>
             <Menu @click="toggleMobileNav" v-show="mobile" class="icon" :class="{'icon-active' : mobileNav }"/>
           </div>
@@ -193,6 +195,10 @@ header {
             flex-basis: 10%;
             transition: 0.5s ease all;
             
+            .profile-link {
+                height: 32px;
+            }
+
             .icon {
                 cursor: pointer;
                 transition: 0.5s ease all;
