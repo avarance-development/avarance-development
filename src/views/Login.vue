@@ -8,12 +8,13 @@
           <h1 class='title'>Login to Avarance</h1>
           <div class="input-wrapper">
             <Email class='icon'/>
-            <input v-model="email" class='input' type="email" name="email" id="email">
+            <input placeholder="Email" v-model="email" class='input' type="email" name="email" id="email" required="required">
           </div>
           <div class="input-wrapper">
             <Password class='icon'/>
-            <input v-model="password" class='input' type="password" name="password" id="password">
+            <input placeholder="Password" v-model="password" class='input' type="password" name="password" id="password" required="required">
           </div>
+          <p class='error' v-show="error">{{ error }}</p>
           <router-link class='reset' :to="{ name: 'ResetPassword' }">Forgot Your Password?</router-link>
           <button class='btn' type="submit">Sign In</button>
       </form>
@@ -23,6 +24,8 @@
 <script>
 import Email from "../assets/Icons/email.svg"
 import Password from "../assets/Icons/password.svg"
+import firebase from "firebase/compat/app"
+import "firebase/compat/auth"
 
 export default {
     name: "Login",
@@ -39,13 +42,13 @@ export default {
     },
     methods: {
         login() {
-            if (this.email && this.password) {
-                console.log('Logged in! ' + this.email + ' ' + this.password);
-                this.email = '';
-                this.password = '';
-            } else {
-                this.error
-            }
+            firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(() => {
+                this.$router.push({ name: "Home" })
+                this.error = ''
+                console.log(firebase.auth().currentUser.uid)
+            }).catch((err) => {
+                this.error = err.message
+            })
         }
     }
 }
@@ -72,6 +75,10 @@ export default {
         border: 2px solid black;
         border-radius: 25px;
         gap: 10px;
+
+        @media(max-width: 1000px) {
+            width: 50vw;
+        }
         
         @media(max-width: 700px) {
             width: 100vw;
@@ -111,6 +118,10 @@ export default {
                 font-size: 1rem;
                 padding-left: 5px;
 
+                @media(max-width: 1000px) {
+                    min-width: 35vw;
+                }
+
                 @media(max-width: 700px) {
                     width: 50vw;
                 }
@@ -118,6 +129,10 @@ export default {
             .input:focus-visible {
                 outline: none;
             }
+        }
+
+        .error {
+            color: red;
         }
 
         .reset {

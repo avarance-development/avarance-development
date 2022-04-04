@@ -9,6 +9,8 @@
 <script>
 import Navigation from "./components/Navigation.vue"
 import Footer from "./components/Footer.vue"
+import firebase from "firebase/compat/app"
+import "firebase/compat/auth"
 
 export default {
   name: "App",
@@ -23,6 +25,7 @@ export default {
   },
   created() {
     this.checkRoute();
+    console.log(firebase.auth().currentUser.uid)
   },
   methods: {
     checkRoute() {
@@ -38,6 +41,7 @@ export default {
   watch: {
     $route() {
       this.checkRoute();
+      console.log(firebase.auth().currentUser)
     }
   }
 }

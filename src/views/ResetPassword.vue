@@ -1,6 +1,8 @@
 <template>
   <section class="container">
-      <form @submit.prevent="login" class="form-wrapper">
+      <Modal modal-message="error" v-show="modalActive" @close-modal="closeModal"/>
+      <Loading v-show="loading"/>
+      <form @submit.prevent="resetPassword" class="form-wrapper">
           <div class="register-text">
             <p>Remembered your Password?</p>
             <router-link :to="{ name: 'Login' }">Login</router-link>
@@ -8,7 +10,7 @@
           <h1 class='title'>Reset Your Password</h1>
           <div class="input-wrapper">
             <Email class='icon'/>
-            <input v-model="email" class='input' type="email" name="email" id="email">
+            <input placeholder="Email" v-model="email" class='input' type="email" name="email" id="email" required="required">
           </div>
           <button class='btn' type="submit">Reset</button>
       </form>
@@ -17,22 +19,33 @@
 
 <script>
 import Email from "../assets/Icons/email.svg"
+import Modal from "../components/Modal.vue"
+import Loading from "../components/Loading.vue"
 
 export default {
     name: 'ResetPassword',
     data() {
         return {
             email: '',
+            error: '',
+            loading: false,
+            modalActive: false,
         }
     },
     components: {
         Email,
+        Modal,
+        Loading
     },
     methods: {
         resetPassword() {
             if (this.email) {
                 console.log('button works')
             }
+        },
+        closeModal() {
+            this.modalActive = !this.modalActive
+            this.email = ''
         }
     }
 }
@@ -59,6 +72,10 @@ export default {
         border: 2px solid black;
         border-radius: 25px;
         gap: 10px;
+
+        @media(max-width: 1000px) {
+            width: 50vw;
+        }
         
         @media(max-width: 700px) {
             width: 100vw;
@@ -98,8 +115,12 @@ export default {
                 font-size: 1rem;
                 padding-left: 5px;
 
+                @media(max-width: 1000px) {
+                    min-width: 35vw;
+                }
+
                 @media(max-width: 700px) {
-                    width: 50vw;
+                    min-width: 50vw;
                 }
             }
             .input:focus-visible {
