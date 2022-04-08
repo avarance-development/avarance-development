@@ -32,9 +32,6 @@ export default {
     }
     .grid {
         flex-basis: 75%;
-        .square {
-
-        }
     }
 }
 

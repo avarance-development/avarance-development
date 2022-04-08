@@ -9,8 +9,8 @@
 <script>
 import Navigation from "./components/Navigation.vue"
 import Footer from "./components/Footer.vue"
-import firebase from "firebase/compat/app"
-import "firebase/compat/auth"
+import { getAuth, onAuthStateChanged } from "firebase/auth"
+import { firebaseApp } from "./firebase/firebaseInit.js"
 
 export default {
   name: "App",
@@ -24,8 +24,22 @@ export default {
     Footer,
   },
   created() {
+    const auth = getAuth(firebaseApp);
+    onAuthStateChanged(auth, (user) => {
+      this.$store.commit("updateUser", user);
+      if(user) {
+        this.$store.dispatch("getCurrentUser")
+      }
+    });
     this.checkRoute();
-    console.log(firebase.auth().currentUser.uid)
+
+    // firebase.auth().onAuthStateChanged((user) => {
+    //   this.$store.commit("updateUser", user);
+    //   if(user) {
+    //     this.$store.dispatch("getCurrentUser")
+    //   }
+    // })
+    // this.checkRoute();
   },
   methods: {
     checkRoute() {
@@ -41,7 +55,6 @@ export default {
   watch: {
     $route() {
       this.checkRoute();
-      console.log(firebase.auth().currentUser)
     }
   }
 }

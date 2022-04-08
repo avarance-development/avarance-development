@@ -1,5 +1,5 @@
-import firebase from "firebase/compat/app";
-import "firebase/compat/firestore";
+import {  initializeApp  } from "firebase/app";
+import { serverTimestamp } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDDCEiGzmIwvpEPo25KvDPAMHYVOzV4uqE",
@@ -11,9 +11,8 @@ const firebaseConfig = {
     measurementId: "G-SP1RZHX8T7"
 };
 
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-const timestamp = firebase.firestore.FieldValue.serverTimestamp;
+const firebaseApp = initializeApp(firebaseConfig);
+const timestamp = serverTimestamp();
 // const analytics = getAnalytics(firebaseApp);
 
-export { timestamp };
-export default firebaseApp.firestore();
+export { timestamp, firebaseApp };

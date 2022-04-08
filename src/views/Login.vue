@@ -24,8 +24,8 @@
 <script>
 import Email from "../assets/Icons/email.svg"
 import Password from "../assets/Icons/password.svg"
-import firebase from "firebase/compat/app"
-import "firebase/compat/auth"
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
+import { firebaseApp } from "../firebase/firebaseInit.js"
 
 export default {
     name: "Login",
@@ -42,13 +42,22 @@ export default {
     },
     methods: {
         login() {
-            firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(() => {
+            const auth = getAuth(firebaseApp);
+            signInWithEmailAndPassword(auth, this.email, this.password).then(() => {
                 this.$router.push({ name: "Home" })
                 this.error = ''
-                console.log(firebase.auth().currentUser.uid)
+                console.log(auth.currentUser.uid);
             }).catch((err) => {
                 this.error = err.message
             })
+
+            // firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(() => {
+            //     this.$router.push({ name: "Home" })
+            //     this.error = ''
+            //     console.log(firebase.auth().currentUser.uid)
+            // }).catch((err) => {
+            //     this.error = err.message
+            // })
         }
     }
 }

@@ -37,9 +37,9 @@
 import Email from "../assets/Icons/email.svg"
 import Password from "../assets/Icons/password.svg"
 import Login from "../assets/Icons/login.svg"
-import firebase from "firebase/compat/app"
-import "firebase/compat/auth"
-import db from "../firebase/firebaseInit.js"
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth"
+import { getFirestore, doc, setDoc } from "firebase/firestore"
+import { firebaseApp } from "../firebase/firebaseInit.js"
 
 export default {
     name: "Register",
@@ -61,11 +61,12 @@ export default {
     methods: {
         async register() {
             this.error = '';
-            const firebaseAuth = await firebase.auth();
-            const createUser = await firebaseAuth.createUserWithEmailAndPassword(this.email, this.password);
+            const auth = getAuth(firebaseApp);
+            const createUser = await createUserWithEmailAndPassword(auth, this.email, this.password);
             const result = await createUser;
-            const dataBase = db.collection("users").doc(result.user.uid);
-            await dataBase.set({
+            const db = getFirestore();
+            const docRef = doc(db, 'users', result.user.uid)
+            await setDoc(docRef, {
                 firstName: this.firstname,
                 lastName: this.lastname,
                 username: this.user,
@@ -73,6 +74,20 @@ export default {
             });
             this.$router.push({ name: "Home" });
             return;
+
+            // this.error = '';
+            // const firebaseAuth = await firebase.auth();
+            // const createUser = await firebaseAuth.createUserWithEmailAndPassword(this.email, this.password);
+            // const result = await createUser;
+            // const dataBase = db.collection("users").doc(result.user.uid);
+            // await dataBase.set({
+            //     firstName: this.firstname,
+            //     lastName: this.lastname,
+            //     username: this.user,
+            //     email: this.email,
+            // });
+            // this.$router.push({ name: "Home" });
+            // return;
         },
     },
 }

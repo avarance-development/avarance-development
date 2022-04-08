@@ -29,9 +29,18 @@
               </li>
           </ul>
           <div class="icon-bar">
-            <router-link class="profile-link" :to="{ name: 'Login' }">
-                <Profile class="icon" :to="{ name: 'Login'}" />
+            <router-link v-if="!user" class="profile-link" :to="{ name: 'Login' }">
+                <Login class="icon" :to="{ name: 'Login'}" />
             </router-link>
+            <div v-else class="profile-link">
+                <LoggedIn @click="toggleProfileView" class="icon"/>
+                <div v-show="profileView" class="profile-popup">
+                    <p>{{this.$store.state.profileFirstName}} {{this.$store.state.profileLastName}}</p>
+                    <p>{{this.$store.state.profileUsername}}</p>
+                    <p>Saved Items</p>
+                    <p @click="signOut" style="cursor: pointer">Sign Out</p>
+                </div>
+            </div>
             <Cart class="icon"/>
             <Menu @click="toggleMobileNav" v-show="mobile" class="icon" :class="{'icon-active' : mobileNav }"/>
           </div>
@@ -70,8 +79,12 @@
 
 <script>
 import Menu from "../assets/Icons/menu.svg"
-import Profile from "../assets/Icons/login.svg"
+import Login from "../assets/Icons/login.svg"
+import LoggedIn from "../assets/Icons/loggedin.svg"
 import Cart from "../assets/Icons/cart.svg"
+import { getAuth, signOut } from "firebase/auth"
+import { firebaseApp } from "../firebase/firebaseInit.js"
+
 export default {
     name: "Navigation",
     data() {
@@ -80,12 +93,14 @@ export default {
             mobile: null,
             mobileNav: null,
             windowWidth: null,
+            profileView: null,
         }
     },
     components: {
         Menu,
-        Profile,
-        Cart
+        Login,
+        Cart,
+        LoggedIn,
     },
     created() {
         window.addEventListener('resize', this.checkScreen);
@@ -95,9 +110,17 @@ export default {
         window.addEventListener('scroll', this.updateScroll);
         this.updateScroll();
     },
+    computed: {
+        user() {
+            return this.$store.state.user;
+        }
+    },
     methods: {
         toggleMobileNav() {
             this.mobileNav = !this.mobileNav;
+        },
+        toggleProfileView() {
+            this.profileView = !this.profileView;
         },
         updateScroll() {
             const scrollPosition = window.scrollY;
@@ -115,6 +138,13 @@ export default {
                 this.mobile = false;
                 this.mobileNav = false;
             }
+        },
+        signOut() {
+            const auth = getAuth(firebaseApp);
+            signOut(auth);
+            window.location.reload();
+            // firebase.auth().signOut();
+            // window.location.reload();
         }
     }
 }
@@ -197,6 +227,58 @@ header {
             
             .profile-link {
                 height: 32px;
+                position: relative;
+
+                .profile-popup {
+                    position: absolute;
+                    top: 50px;
+                    right: -50px;
+                    display: flex;
+                    flex-direction: column;
+                    align-content: center;
+                    text-align: center;
+                    justify-content: space-around;
+                    gap: 15px;
+                    max-width: 250px;
+                    width: 150px;
+                    background-color: #303030;
+                    box-shadow: 0 4px 8px -1px rgba(0,0,0,0.2), 0 2px 4px -1px rgba(0,0,0,0.7);
+
+                    p {
+                        position: relative;
+                        margin: 0 10px;
+                    }
+
+                    p:first-child {
+                        margin-top: 10px;
+                    }
+
+                    p:last-child {
+                        margin-bottom: 10px;
+                    }
+
+                    p:nth-child(3)::after {
+                        content:'';
+                        position:absolute;
+                        top: -10px;
+                        left: 5px;
+                        width: 125px;
+                        height: 2px;
+                        background-color: #fff;
+                    }
+
+                }
+                .profile-popup::after {
+                    content:'';
+                    position:absolute;
+                    width: 0;
+                    height: 0;
+                    border-style: solid;
+                    border-width: 0px 9px 9px 9px;
+                    border-color: transparent transparent #303030 transparent;
+                    top: -7px;
+                    left: 75px;
+                }
             }
 
             .icon {
