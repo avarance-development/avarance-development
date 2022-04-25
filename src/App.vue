@@ -25,10 +25,10 @@ export default {
   },
   created() {
     const auth = getAuth(firebaseApp);
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       this.$store.commit("updateUser", user);
       if(user) {
-        this.$store.dispatch("getCurrentUser")
+        this.$store.dispatch("getCurrentUser", user)
       }
     });
     this.checkRoute();

@@ -34,11 +34,25 @@
             </router-link>
             <div v-else class="profile-link">
                 <LoggedIn @click="toggleProfileView" class="icon"/>
-                <div v-show="profileView" class="profile-popup">
+                <div v-show="profileView" class="profile-popup" :class="{'shift': scrolledNav}">
                     <p>{{this.$store.state.profileFirstName}} {{this.$store.state.profileLastName}}</p>
-                    <p>{{this.$store.state.profileUsername}}</p>
-                    <p>Saved Items</p>
-                    <p @click="signOut" style="cursor: pointer">Sign Out</p>
+                    <p class="username">{{this.$store.state.profileUsername}}</p>
+                    <router-link v-if="admin" class='admin-link' :to="{ name: 'Admin' }">
+                        <Admin class="svg-icon"/>
+                        <p>Admin</p>
+                    </router-link>
+                    <router-link v-if="admin" class='admin-link' :to="{ name: 'CreateProduct' }">
+                        <Admin class="svg-icon"/>
+                        <p>Create Product</p>
+                    </router-link>
+                    <router-link class="admin-link" :to="{ name: 'Home' }">
+                        <Saved class="svg-icon"/>
+                        <p>Saved Items</p>
+                    </router-link>
+                    <div class="admin-link" @click="signOut">
+                        <Exit class="svg-icon"/>
+                        <p style="cursor: pointer">Sign Out</p>
+                    </div>
                 </div>
             </div>
             <Cart class="icon"/>
@@ -82,6 +96,9 @@ import Menu from "../assets/Icons/menu.svg"
 import Login from "../assets/Icons/login.svg"
 import LoggedIn from "../assets/Icons/loggedin.svg"
 import Cart from "../assets/Icons/cart.svg"
+import Exit from  "../assets/Icons/exit.svg"
+import Saved from "../assets/Icons/bookmark.svg"
+import Admin from "../assets/Icons/admin.svg"
 import { getAuth, signOut } from "firebase/auth"
 import { firebaseApp } from "../firebase/firebaseInit.js"
 
@@ -101,6 +118,9 @@ export default {
         Login,
         Cart,
         LoggedIn,
+        Exit,
+        Saved,
+        Admin,
     },
     created() {
         window.addEventListener('resize', this.checkScreen);
@@ -113,6 +133,9 @@ export default {
     computed: {
         user() {
             return this.$store.state.user;
+        },
+        admin() {
+            return this.$store.state.profileAdmin;
         }
     },
     methods: {
@@ -232,7 +255,7 @@ header {
                 .profile-popup {
                     position: absolute;
                     top: 50px;
-                    right: -50px;
+                    right: -85px;
                     display: flex;
                     flex-direction: column;
                     align-content: center;
@@ -240,48 +263,67 @@ header {
                     justify-content: space-around;
                     gap: 15px;
                     max-width: 250px;
-                    width: 150px;
-                    background-color: #303030;
+                    min-width: 200px;
+                    background-color: #505050;
                     box-shadow: 0 4px 8px -1px rgba(0,0,0,0.2), 0 2px 4px -1px rgba(0,0,0,0.7);
-
-                    p {
-                        position: relative;
-                        margin: 0 10px;
-                    }
+                    transition: 0.1s ease-in-out;
 
                     p:first-child {
-                        margin-top: 10px;
+                        margin-top: 20px;
                     }
 
-                    p:last-child {
-                        margin-bottom: 10px;
+                    .username {
+                        position: relative;
                     }
 
-                    p:nth-child(3)::after {
-                        content:'';
-                        position:absolute;
-                        top: -10px;
-                        left: 5px;
-                        width: 125px;
+                    .username::after {
+                        content: '';
+                        position: absolute;
+                        top: 25px;
+                        left: 10px;
+                        width: 175px;
                         height: 2px;
                         background-color: #fff;
+                    }
+                    
+                    .admin-link {
+                        display: flex;
+                        flex-direction: row;
+                        position: relative;
+                        text-decoration: none;
+                        color: inherit;
+                        padding-left: 15px;
+                        
+                        p {
+                            transition: color 0.3s ease-in-out;
+                            margin: 6.4px auto;
+                        }
+
+                        p:hover {
+                            color: #000;
+                        }
+                    }
+
+                    .admin-link:last-child {
+                        margin-bottom: 10px;
                     }
 
                 }
                 .profile-popup::after {
                     content:'';
-                    position:absolute;
+                    position: absolute;
                     width: 0;
                     height: 0;
                     border-style: solid;
                     border-width: 0px 9px 9px 9px;
-                    border-color: transparent transparent #303030 transparent;
+                    border-color: transparent transparent #505050 transparent;
                     top: -7px;
-                    left: 75px;
+                    left: 87.5px;
                 }
             }
 
             .icon {
+                user-select: none;
                 cursor: pointer;
                 transition: 0.5s ease all;
             }
@@ -412,4 +454,17 @@ header {
     }
 }
 
+.shift {
+    top: 45px !important;
+}
+
+.svg-icon {
+    position: absolute;
+    fill: #fff;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-self: flex-start;
+    left: 3px;
+}
 </style>

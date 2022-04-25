@@ -59,6 +59,22 @@ const routes = [
     }
   },
   {
+    path: '/admin',
+    name: 'Admin',
+    component: () => import('../views/Admin.vue'),
+    meta: {
+      title: "Admin",
+    }
+  },
+  {
+    path: '/createproduct',
+    name: 'CreateProduct',
+    component: () => import('../views/CreateProduct.vue'),
+    meta: {
+      title: "Create Product",
+    }
+  },
+  {
     path: "/:catchAll(.*)",
     name: 'Error404',
     component: () => import('../views/Error404.vue'),
