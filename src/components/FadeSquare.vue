@@ -22,7 +22,6 @@ export default {
   text-decoration: none;
   color: black;
   
-
   .first {
     max-width: 100%;
     height: auto;
@@ -45,13 +44,14 @@ export default {
   }
 
   .metal-description {
+    font-size: 0.67rem;
     color: #888888;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   }
 
   .product-title {
     font-size: 1.5rem;
-    margin-top: 4px;
+    margin: 2px 0;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   }
 
@@ -59,6 +59,7 @@ export default {
     color: #888888;
     font-size: 1rem;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    margin-bottom: 10px;
   }
 }
 </style>

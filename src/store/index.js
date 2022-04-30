@@ -15,6 +15,7 @@ export default new Vuex.Store({
     profileLastName: null,
     profileUsername: null,
     profileId: null,
+    cart: [],
   },
   mutations: {
     updateUser(state, payload) {

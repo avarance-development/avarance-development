@@ -51,7 +51,7 @@ const routes = [
     }
   },
   {
-    path: '/shop',
+    path: '/shop/:category',
     name: 'Shop',
     component: Shop,
     meta: {
@@ -75,6 +75,14 @@ const routes = [
     }
   },
   {
+    path: '/:category/:productId',
+    name: 'ViewProduct',
+    component: () => import('../views/ViewProduct.vue'),
+    meta: {
+      title: "TO BE CHANGED",
+    }
+  },
+  {
     path: "/:catchAll(.*)",
     name: 'Error404',
     component: () => import('../views/Error404.vue'),
@@ -87,7 +95,10 @@ const routes = [
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes
+  routes,
+  scrollBehavior() {
+    return { x: 0, y: 0 };
+  },
 })
 
 router.beforeEach((to, from, next) => {

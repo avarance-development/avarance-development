@@ -7,26 +7,26 @@
             </router-link>
           </div>
           <ul v-show="!mobile" class="navigation">
-              <li>
-                  <router-link class="link" :to="{ name: 'Home' }">
-                      Home
-                  </router-link>
-                  <router-link class="link" :to="{ name: '' }">
-                      Rings
-                  </router-link>
-                  <router-link class="link" :to="{ name: '' }">
-                      Pendants
-                  </router-link>
-                  <router-link class="link" :to="{ name: '' }">
-                      Earrings
-                  </router-link>
-                  <router-link class="link" :to="{ name: '' }">
-                      Contact
-                  </router-link>
-                  <router-link class="link" :to="{ name: '' }">
-                      FAQ
-                  </router-link>
-              </li>
+            <li>
+                <router-link class="link" :to="{ name: 'Home' }">
+                    Home
+                </router-link>
+                <router-link class="link" :to="{ name: 'Shop', params: { category: 'rings' }}">
+                    Rings
+                </router-link>
+                <router-link class="link" :to="{ name: 'Shop', params: { category: 'pendants' }}">
+                    Pendants
+                </router-link>
+                <router-link class="link" :to="{ name: 'Shop', params: { category: 'earrings' }}">
+                    Earrings
+                </router-link>
+                <router-link class="link" :to="{ name: '' }">
+                    Contact
+                </router-link>
+                <router-link class="link" :to="{ name: '' }">
+                    FAQ
+                </router-link>
+            </li>
           </ul>
           <div class="icon-bar">
             <router-link v-if="!user" class="profile-link" :to="{ name: 'Login' }">
@@ -51,41 +51,57 @@
                     </router-link>
                     <div class="admin-link" @click="signOut">
                         <Exit class="svg-icon"/>
-                        <p style="cursor: pointer">Sign Out</p>
+                        <p>Sign Out</p>
                     </div>
                 </div>
             </div>
-            <Cart class="icon"/>
+            <Cart @click="toggleCartNav" class="icon"/>
             <Menu @click="toggleMobileNav" v-show="mobile" class="icon" :class="{'icon-active' : mobileNav }"/>
           </div>
           <transition name="mobile-nav">
-            <ul v-show="mobileNav" class="dropdown-nav">
+            <ul v-show="mobileNav" class="dropdown-nav left-nav">
               <div class="side-bar-header">
                 <img src="@/assets/logo.png" alt="Logo">
               </div>
               <li>
-                  <router-link class="link" :to="{ name: 'Home' }">
-                      Home
-                  </router-link>
-                  <router-link class="link" :to="{ name: '' }">
-                      Rings
-                  </router-link>
-                  <router-link class="link" :to="{ name: '' }">
-                      Pendants
-                  </router-link>
-                  <router-link class="link" :to="{ name: '' }">
-                      Earrings
-                  </router-link>
-                  <router-link class="link" :to="{ name: '' }">
-                      Contact
-                  </router-link>
-                  <router-link class="link" :to="{ name: '' }">
-                      FAQ
-                  </router-link>
+                <router-link class="link" :to="{ name: 'Home' }">
+                    Home
+                </router-link>
+                <router-link class="link" :to="{ name: 'Shop', params: { category: 'rings' }}">
+                    Rings
+                </router-link>
+                <router-link class="link" :to="{ name: 'Shop', params: { category: 'pendants' }}">
+                    Pendants
+                </router-link>
+                <router-link class="link" :to="{ name: 'Shop', params: { category: 'earrings' }}">
+                    Earrings
+                </router-link>
+                <router-link class="link" :to="{ name: '' }">
+                    Contact
+                </router-link>
+                <router-link class="link" :to="{ name: '' }">
+                    FAQ
+                </router-link>
               </li>
             </ul>
           </transition>
-          <div v-show="mobileNav" @click="toggleMobileNav" class="overlay" ></div>
+          <div v-show="mobileNav" @click="toggleMobileNav" class="nav-overlay" ></div>
+          <transition name="cart-nav">
+            <ul v-show="cartNav" class="dropdown-nav right-nav">
+              <div class="side-bar-header">
+                <Cart @click="toggleCartNav" class="cart-icon"/>
+                <h1>Your Cart: (0)</h1>
+                <Close @click="toggleCartNav" class="icon" :class="{'icon-active' : cartNav }"/>
+              </div>
+              <li>
+                Cart Item #1
+              </li>
+              <li>
+                Cart Item #2
+              </li>
+            </ul>
+          </transition>
+          <div v-show="cartNav" @click="toggleCartNav" class="cart-overlay"></div>
       </nav>
   </header>
 </template>
@@ -99,6 +115,7 @@ import Cart from "../assets/Icons/cart.svg"
 import Exit from  "../assets/Icons/exit.svg"
 import Saved from "../assets/Icons/bookmark.svg"
 import Admin from "../assets/Icons/admin.svg"
+import Close from "../assets/Icons/cross.svg"
 import { getAuth, signOut } from "firebase/auth"
 import { firebaseApp } from "../firebase/firebaseInit.js"
 
@@ -111,6 +128,7 @@ export default {
             mobileNav: null,
             windowWidth: null,
             profileView: null,
+            cartNav: null,
         }
     },
     components: {
@@ -121,6 +139,7 @@ export default {
         Exit,
         Saved,
         Admin,
+        Close,
     },
     created() {
         window.addEventListener('resize', this.checkScreen);
@@ -141,6 +160,9 @@ export default {
     methods: {
         toggleMobileNav() {
             this.mobileNav = !this.mobileNav;
+        },
+        toggleCartNav() {
+            this.cartNav = !this.cartNav;
         },
         toggleProfileView() {
             this.profileView = !this.profileView;
@@ -337,6 +359,58 @@ header {
                 justify-content: flex-end;
             }
         }
+
+        .right-nav {
+            right: 0;
+            max-width: 300px;
+
+            .side-bar-header {
+                background-color: #303030;
+                min-height: 80px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+
+                .cart-icon {
+                    width: 36px;
+                    height: 36px;
+                    margin-left: 25px;
+                    cursor: pointer;
+
+                    @media(max-width: 700px) {
+                        margin-left: 10px;
+                    }
+                }
+                
+                h1 {
+                    font-size: 1.5rem;
+                    margin: 0 auto;
+                }
+
+                .icon {
+                    fill: white;
+                    width: 40px;
+                    height: 40px;
+                    margin-right: 25px;
+                    cursor: pointer;
+                    user-select: none;
+                    transition: 0.5s ease all;
+
+                    @media(max-width: 700px) {
+                        margin-right: 10px;
+                    }
+                }
+
+                .icon-active {
+                    transform: rotate(360deg);
+                }
+            }
+        }
+
+        .left-nav {
+            left: 0;
+            max-width: 250px;
+        }
         
         .dropdown-nav {
             display: flex;
@@ -344,15 +418,15 @@ header {
             align-items: flex-start;
             position: fixed;
             width: 100%;
-            max-width: 250px;
             height: 100%;
             background-color: #ebebeb;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2), 0 2px 4px -1px rgba(0,0,0,0.7);
             top: 0;
-            left: 0;
+
             @media(max-width: 400px) {
                 max-width: 70vw;
             }
+
             li {
                 padding-left: 25%;
                 padding-top: 10%;
@@ -407,7 +481,7 @@ header {
             }
         }
 
-        .overlay {
+        .nav-overlay {
            position: fixed;
            top: 0;
            left: 250px;
@@ -417,6 +491,20 @@ header {
            cursor: pointer;
            @media(max-width: 400px) {
                left: 70vw;
+               width: 30vw;
+           }
+        }
+
+        .cart-overlay {
+           position: fixed;
+           top: 0;
+           right: 300px;
+           height: 100vh;
+           width: calc(100vw - 300px);
+           z-index: 100;
+           cursor: pointer;
+           @media(max-width: 400px) {
+               right: 70vw;
                width: 30vw;
            }
         }
@@ -433,6 +521,21 @@ header {
 
         .mobile-nav-enter-to,
         .mobile-nav-leave {
+            transform: translateX(0);
+        }
+
+        .cart-nav-enter-active,
+        .cart-nav-leave-active {
+            transition: 1s ease all;
+        }
+
+        .cart-nav-enter,
+        .cart-nav-leave-to {
+            transform: translateX(300px);
+        }
+
+        .cart-nav-enter-to,
+        .cart-nav-leave {
             transform: translateX(0);
         }
     }

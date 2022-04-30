@@ -7,8 +7,8 @@
             <p class="content-preview">
                 {{ post.description }}
             </p>
-            <router-link class="products-link" to="#">
-                {{ post.linkTitle }}<Arrow  class="icon"/>
+            <router-link class="products-link" :to="{ name: 'Shop', params: { category: `${post.query}` }}">
+                {{ post.linkTitle }}<Arrow class="icon"/>
             </router-link>
         </div>
         <img class="photo" :src="require(`../assets/photos/${post.photoName}.jpg`)" alt="">

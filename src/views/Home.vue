@@ -20,22 +20,25 @@ export default {
     return {
       shopPostList: [
         {
-          title: "Stainless Steel Rings",
+          title: "Stainless Steel/Sterling Silver Rings",
           description: "This is a temperary description 1",
-          linkTitle: "View Stainless Steel Rings",
-          photoName: "blurry"
+          linkTitle: "View Rings",
+          photoName: "blurry",
+          query: "rings",
         },
         {
-          title: "This is a temperary title 2",
+          title: "Stainless Steel/Sterling Silver Pendants",
           description: "This is a temperary description 2",
-          linkTitle: "This is a temperary link",
-          photoName: "blurry"
+          linkTitle: "View Pendants",
+          photoName: "blurry",
+          query: "pendants",
         },
         {
-          title: "This is a temperary title 3",
+          title: "Stainless Steel/Sterling Silver Earrings",
           description: "This is a temperary description 3",
-          linkTitle: "This is a temperary link",
-          photoName: "blurry"
+          linkTitle: "View Earrings",
+          photoName: "blurry",
+          query: "earrings",
         },
       ],
     }
@@ -44,6 +47,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 .home {
   display: flex;
   flex-direction: column;
@@ -56,4 +60,5 @@ export default {
     order: 2;
   }
 }
+
 </style>

@@ -1,7 +1,7 @@
 <template>
   <section class="container">
-      <router-link class="header" :to="{ name: 'Home' }">
-          Heading Tag
+      <router-link class="header" :to="{ name: 'Shop', params: { category: 'all' }}">
+          Shop Our Entire Catalog
       </router-link>
       <transition-group tag="section" class="grid">
         <FadeSquare v-for="square in 24" :key="square" />
@@ -51,24 +51,10 @@ export default {
     }
     .grid {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        grid-auto-flow: row;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
         justify-items: center;
-        gap: 30px;
+        gap: 20px;
         margin-bottom: 30px;
-
-        @media(max-width: 1300px) {
-            grid-template-columns: repeat(4, 1fr);
-        }
-
-        @media(max-width: 1000px) {
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        @media(max-width: 700px) {
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
     }
 
     .pagination {

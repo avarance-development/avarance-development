@@ -29,15 +29,15 @@
         <router-link class="link" :to="{ name: 'Home' }">
             Home
         </router-link>
-        <router-link class="link" :to="{ name: '' }">
+        <router-link class="link" :to="{ name: 'Shop', params: { category: 'rings' }}">
             Rings
         </router-link>
-        <router-link class="link" :to="{ name: '' }">
+        <router-link class="link" :to="{ name: 'Shop', params: { category: 'pendants' }}">
             Pendants
         </router-link> 
       </div>
       <div class='second adj'>
-        <router-link class="link" :to="{ name: '' }">
+        <router-link class="link" :to="{ name: 'Shop', params: { category: 'earrings' }}">
             Earrings
         </router-link>
         <router-link class="link" :to="{ name: '' }">

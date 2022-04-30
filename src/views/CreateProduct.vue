@@ -19,9 +19,9 @@
       <div class="input-wrapper">
         <label for="Item Type">Item Type: </label>
         <select v-model="itemType" id="Item Type">
-          <option value="ring">Ring</option>
-          <option value="pendant">Pendant</option>
-          <option value="earring">Earring</option>
+          <option value="rings">Rings</option>
+          <option value="pendants">Pendants</option>
+          <option value="earrings">Earrings</option>
         </select>
       </div>
       <div class="input-wrapper">
@@ -88,7 +88,7 @@ export default {
       itemName: "",
       itemPrice: 0.00,
       itemDiscount: 0.00,
-      itemType: "ring",
+      itemType: "rings",
       metalMaterial: "Stainless Steel",
       filterCandidate: "",
       filters: [],
