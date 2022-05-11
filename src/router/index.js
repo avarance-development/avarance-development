@@ -79,7 +79,7 @@ const routes = [
     name: 'ViewProduct',
     component: () => import('../views/ViewProduct.vue'),
     meta: {
-      title: "TO BE CHANGED",
+      title: "View Product",
     }
   },
   {

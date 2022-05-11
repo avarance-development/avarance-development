@@ -78,7 +78,7 @@
 import Cross from "../assets/Icons/cross.svg"
 import Loading from "../components/Loading.vue"
 import { compress, filetoDataURL } from 'image-conversion';
-import { getFirestore, collection, addDoc } from "firebase/firestore"; 
+import { getFirestore, collection, setDoc, doc } from "firebase/firestore"; 
 import { firebaseApp, timestamp } from "../firebase/firebaseInit.js"
 
 export default {
@@ -166,8 +166,12 @@ export default {
       const pics = [this.coverPicture, this.hoverPicture]
       const picArr = pics.concat(this.itemPictures)
       const db = getFirestore(firebaseApp)
-      await addDoc(collection(db, "products"), {
+      const newProductRef = collection(db, "products")
+      const productID  = doc(newProductRef).id
+      await setDoc(doc(db, "products", productID), {
+        itemID: productID,
         itemName: this.itemName,
+        itemType: this.itemType,
         itemPrice: this.itemPrice,
         itemDiscount: this.itemDiscount,
         metalMaterial: this.metalMaterial,
@@ -194,6 +198,8 @@ export default {
         oneOfAKind: this.oneOfAKind,
         popularity: 0,
         timeAdded: timestamp,
+      }).catch((err) => {
+        console.log(err)
       });
 
       this.resetForm();
@@ -205,7 +211,9 @@ export default {
       this.itemDiscount = 0.00
       this.filters = []
       this.coverPicture = ""
+      document.getElementById("cover").value = "";
       this.hoverPicture = ""
+      document.getElementById("hover").value = "";
       this.itemPictures = []
       this.oneOfAKind = false
       this.itemSizeArray = new Array(16).fill(0)

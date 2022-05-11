@@ -90,14 +90,15 @@
             <ul v-show="cartNav" class="dropdown-nav right-nav">
               <div class="side-bar-header">
                 <Cart @click="toggleCartNav" class="cart-icon"/>
-                <h1>Your Cart: (0)</h1>
+                <h1>Your Cart: ({{  this.$store.state.cart.length  }})</h1>
                 <Close @click="toggleCartNav" class="icon" :class="{'icon-active' : cartNav }"/>
               </div>
-              <li>
-                Cart Item #1
-              </li>
-              <li>
-                Cart Item #2
+              <li v-for="(product, index) in this.$store.state.cart" :key="product.itemName" class="cart-item">
+                <img class="cart-img" :src="product.itemPictures[index]">
+                <h1 class="cart-itemName">{{ product.itemName }}</h1>
+                <h3 class="cart-metalMat">{{ product.metalMaterial }}</h3>
+                <h6 class="cart-price">{{ product.itemPrice }}[TEMP CALC AFTER DISCOUNT]</h6>
+                <h6 class="cart-size-quant">Size: [TO BE INSTANTIATED], Quantity: [TO BE INSTANTIATED]</h6>
               </li>
             </ul>
           </transition>
@@ -370,6 +371,7 @@ header {
                 display: flex;
                 align-items: center;
                 justify-content: flex-end;
+                margin-bottom: 20px;
 
                 .cart-icon {
                     width: 36px;
@@ -403,6 +405,53 @@ header {
 
                 .icon-active {
                     transform: rotate(360deg);
+                }
+            }
+
+            .cart-item {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 0;
+                max-width: 300px;
+                margin-bottom: 20px;
+                
+                .cart-img {
+                    height: 200px;
+                    width: 200px;
+                }
+                
+                .cart-itemName {
+                    color: #000;
+                    white-space: pre-wrap;
+                    font-size: 1.125rem;
+                    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+                    margin: 0 40px;
+                }
+
+                .cart-metalMat {
+                    color: #888888;
+                    white-space: pre-wrap;
+                    font-size: 0.875rem;
+                    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+                    margin: 0 40px;
+                }
+
+                .cart-price {
+                    color: #888888;
+                    white-space: pre-wrap;
+                    font-size: 0.875rem;
+                    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+                    margin: 0 40px;
+                }
+                
+                .cart-size-quant {
+                    color: #000;
+                    white-space: pre-wrap;
+                    font-size: 0.67rem;
+                    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+                    margin: 0 40px;
                 }
             }
         }

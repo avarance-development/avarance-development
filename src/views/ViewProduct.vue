@@ -4,7 +4,7 @@
 
 <script>
 export default {
-    name: "View Product",
+    name: "ViewProduct",
     data() {
         return {
 

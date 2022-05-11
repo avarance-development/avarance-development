@@ -1,14 +1,8 @@
 <template>
   <section class="container">
-      <router-link class="header" :to="{ name: 'Shop', params: { category: 'all' }}">
-          Shop Our Entire Catalog
-      </router-link>
       <transition-group tag="section" class="grid">
-        <FadeSquare v-for="square in 24" :key="square" />
+        <FadeSquare :doc="doc.data()" v-for="doc in queryArray" :key="doc.data().itemID" />
       </transition-group>
-      <div class="pagination">
-          PAGINATION TO BE IMPLEMENTED
-      </div>
   </section>
 </template>
 
@@ -18,7 +12,8 @@ export default {
     name: "ProductGrid",
     components: {
         FadeSquare,
-    }
+    },
+    props: ["queryArray"],
 }
 </script>
 
@@ -26,45 +21,19 @@ export default {
 .container {
     margin: 0 20px;
 
-    .header {
-        display: block;
-        position: relative;
-        width: fit-content;
-        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-        color: #000000;
-        font-weight: 700;
-        font-size: 1.625rem;
-        text-decoration: none;
-        margin: 25px auto;
-    }
-
-    .header:after {
-        display: block;
-        content: "";
-        width: 32vw;
-        margin-top: 5px;
-        margin-left: -16vw;
-        left: 50%;
-        position: absolute;
-        border-bottom: black solid 3px;
-        cursor: default;
-    }
     .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(225px, 0.5fr));
+        justify-content: center;
         justify-items: center;
         gap: 20px;
         margin-bottom: 30px;
+
+        @media(max-width: 525px) {
+            grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+            gap: 10px;
+        }
     }
 
-    .pagination {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 150px;
-        background-color: rgba(0,0,0,0.6);
-        margin-bottom: 20px;
-    }
 }
 </style>
