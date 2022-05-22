@@ -21,8 +21,8 @@
 import Email from "../assets/Icons/email.svg"
 import Modal from "../components/Modal.vue"
 import Loading from "../components/Loading.vue"
-import { getAuth, sendPasswordResetEmail } from "firebase/auth"
-import { firebaseApp } from "../firebase/firebaseInit.js"
+import { sendPasswordResetEmail } from "firebase/auth"
+import { auth } from "../firebase/firebaseInit.js"
 
 export default {
     name: 'ResetPassword',
@@ -42,7 +42,6 @@ export default {
     methods: {
         resetPassword() {
             this.loading = true;
-            const auth = getAuth(firebaseApp);
             sendPasswordResetEmail(auth, this.email).then(() => {
                 this.error = "If your account exists, you will receive an email"
                 this.loading = false

@@ -13,8 +13,8 @@
 
 <script>
 import Loading from "../components/Loading.vue"
-import { getFunctions, httpsCallable } from "firebase/functions"
-import { firebaseApp } from "../firebase/firebaseInit.js"
+import { httpsCallable } from "firebase/functions"
+import { functions } from "../firebase/firebaseInit.js"
 
 
 export default {
@@ -30,7 +30,6 @@ export default {
         async addAdmin() {
             console.log('add admin running' + this.adminEmail)
             this.loading = true;
-            const functions = getFunctions(firebaseApp);
             const addAdmin = await httpsCallable(functions, 'addAdminRole');
             addAdmin({ email: this.adminEmail }).then((result) => {
                 console.log(result)

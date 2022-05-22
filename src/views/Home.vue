@@ -14,8 +14,8 @@
 <script>
 import ShopPost from '../components/ShopPost.vue'
 import ProductGrid from '../components/ProductGrid.vue'
-import { getFirestore, query, where, collection, getDocs, limit } from "firebase/firestore";  
-import { firebaseApp } from "../firebase/firebaseInit.js"
+import { query, where, collection, getDocs, limit } from "firebase/firestore";  
+import { db } from "../firebase/firebaseInit.js"
 
 export default {
   name: 'Home',
@@ -61,8 +61,6 @@ export default {
     }
   },
   async beforeMount() {
-    const db = getFirestore(firebaseApp)
-
     const queryConditions = this.initialQueryList.map((condition) =>
       where(condition.property, condition.operator, condition.value)
     );

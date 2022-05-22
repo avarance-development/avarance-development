@@ -24,8 +24,8 @@
 <script>
 import Email from "../assets/Icons/email.svg"
 import Password from "../assets/Icons/password.svg"
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
-import { firebaseApp } from "../firebase/firebaseInit.js"
+import { signInWithEmailAndPassword } from "firebase/auth"
+import { auth } from "../firebase/firebaseInit.js"
 
 export default {
     name: "Login",
@@ -42,7 +42,6 @@ export default {
     },
     methods: {
         login() {
-            const auth = getAuth(firebaseApp);
             signInWithEmailAndPassword(auth, this.email, this.password).then(() => {
                 this.$router.push({ name: "Home" })
                 this.error = ''

@@ -16,184 +16,164 @@
     <section class="container">
         <div class="aside">
             <div class="top-tab">
-                <button class="cancel">Cancel</button>
+                <button class="cancel" @click="cancelQuerry">Cancel</button>
                 <h4 class="filters">Filters</h4>
-                <button class="apply">Apply</button>
+                <button class="apply" @click="formQuerry">Apply</button>
             </div>
             <div class="sort-by-tab">
                 <label for="sorting" class="sort">Sort by:</label>
-                <select id="sorting" class="selection">
+                <select id="sorting" class="selection" v-model="sortedBy">
                     <option value="">Featured</option>
                     <option value="popularity">Best Selling</option>
                     <option value="itemPrice">Item Price Ascending</option>
-                    <option value="reverseditemPrice">Item Price Descending</option>
-                    <option value="itemDiscount">Item Discount Ascending</option>
+                    <option value="itemDiscount desc">Item Discount Descending</option>
                     <option value="itemName">Alphabetically Ascending</option>
-                    <option value="reverseditemName">Alphabetically Descending</option>
-                    <option value="timeAdded">Recently Added</option>
+                    <option value="itemName desc">Alphabetically Descending</option>
+                    <option value="timeAdded desc">Recently Added</option>
                 </select>
             </div>
             <div class="item-typing">
-                <div class="title-wrapper">
+                <div @click="toggleMetalFilter" class="title-wrapper">
                     <h1 class="title">Metal Material:</h1>
-                    <RightArrow @click="toggleMetalFilter" class="icon" :class="{'icon-active' : metalFilter }"/>
+                    <RightArrow class="icon" :class="{'icon-active' : metalFilter }"/>
                 </div>
                 <div v-show="metalFilter" class="type-wrapper">
                     <div class="wrapper">
-                        <input type="radio" class="type-input" id="any" value="" name="type" checked>
+                        <input type="radio" class="type-input" id="any" value="" name="type" v-model="metalMaterial" checked>
                         <label for="any" class="label">Any</label>
                     </div>
                     <div class="wrapper">
-                        <input type="radio" class="type-input" id="steel" value="Stainless Steel" name="type">
+                        <input type="radio" class="type-input" id="steel" value="Stainless Steel" v-model="metalMaterial" name="type">
                         <label for="steel" class="label">Stainless Steel</label>
                     </div>
                     <div class="wrapper">
-                        <input type="radio" class="type-input" id="silver" value="Sterling Steel" name="type">
+                        <input type="radio" class="type-input" id="silver" value="Sterling Silver" v-model="metalMaterial" name="type">
                         <label for="silver" class="label">Sterling Silver</label>
                     </div>
                 </div>
             </div>
             <div class="available-menu">
-                <div class="title-wrapper">
+                <div @click="toggleSizeFilter" class="title-wrapper">
                     <h1 class="title">Stocked In Size:</h1>
-                    <RightArrow @click="toggleSizeFilter" class="icon" :class="{'icon-active' : sizeFilter }"/>
+                    <RightArrow class="icon" :class="{'icon-active' : sizeFilter }"/>
                 </div>
                 <div v-show="sizeFilter" class="size-wrapper">
                     <div class="wrapper">
-                        <!-- <input type="checkbox" id="one" value="1"> -->
-                        <input type="radio" id="n/a" value="" name="size" checked>
+                        <input type="radio" id="n/a" value="" name="size" v-model="size" checked>
                         <label for="n/a">N/A</label>
                     </div>
                     <div class="wrapper">
-                        <!-- <input type="checkbox" id="one" value="1"> -->
-                        <input type="radio" id="one" value="1" name="size">
-                        <label for="one">1</label>
-                    </div>
-                    <div class="wrapper">
-                        <!-- <input type="checkbox" id="two" value="2"> -->
-                        <input type="radio" id="two" value="2" name="size">
-                        <label for="two">2</label>
-                    </div>
-                    <div class="wrapper">
-                        <!-- <input type="checkbox" id="three" value="3"> -->
-                        <input type="radio" id="three" value="3" name="size">
-                        <label for="three">3</label>
-                    </div>
-                    <div class="wrapper">
-                        <!-- <input type="checkbox" id="four" value="4"> -->
-                        <input type="radio" id="four" value="4" name="size">
+                        <input type="radio" id="four" value="4" name="size" v-model="size">
                         <label for="four">4</label>
                     </div>
                     <div class="wrapper">
-                        <!-- <input type="checkbox" id="five" value="5"> -->
-                        <input type="radio" id="five" value="5" name="size">
+                        <input type="radio" id="five" value="5" name="size" v-model="size">
                         <label for="five">5</label>
                     </div>
                     <div class="wrapper">
-                        <!-- <input type="checkbox" id="six" value="6"> -->
-                        <input type="radio" id="six" value="6" name="size">
+                        <input type="radio" id="six" value="6" name="size" v-model="size">
                         <label for="six">6</label>
                     </div>
                     <div class="wrapper">
-                        <!-- <input type="checkbox" id="seven" value="7"> -->
-                        <input type="radio" id="seven" value="7" name="size">
+                        <input type="radio" id="seven" value="7" name="size" v-model="size">
                         <label for="seven">7</label>
                     </div>
                     <div class="wrapper">
-                        <!-- <input type="checkbox" id="eight" value="8"> -->
-                        <input type="radio" id="eight" value="8" name="size">
+                        <input type="radio" id="eight" value="8" name="size" v-model="size">
                         <label for="eight">8</label>
                     </div>
                     <div class="wrapper">
-                        <!-- <input type="checkbox" id="nine" value="9"> -->
-                        <input type="radio" id="nine" value="9" name="size">
+                        <input type="radio" id="nine" value="9" name="size" v-model="size">
                         <label for="nine">9</label>
                     </div>
                     <div class="wrapper">
-                        <!-- <input type="checkbox" id="ten" value="10"> -->
-                        <input type="radio" id="ten" value="10" name="size">
+                        <input type="radio" id="ten" value="10" name="size" v-model="size">
                         <label for="ten">10</label>
                     </div>
                     <div class="wrapper">
-                        <!-- <input type="checkbox" id="eleven" value="11"> -->
-                        <input type="radio" id="eleven" value="11" name="size">
+                        <input type="radio" id="eleven" value="11" name="size" v-model="size">
                         <label for="eleven">11</label>
                     </div>
                     <div class="wrapper">
-                        <!-- <input type="checkbox" id="twelve" value="12"> -->
-                        <input type="radio" id="twelve" value="12" name="size">
+                        <input type="radio" id="twelve" value="12" name="size" v-model="size">
                         <label for="twelve">12</label>
                     </div>
                     <div class="wrapper">
-                        <!-- <input type="checkbox" id="thirteen" value="13"> -->
-                        <input type="radio" id="thirteen" value="13" name="size">
+                        <input type="radio" id="thirteen" value="13" name="size" v-model="size">
                         <label for="thirteen">13</label>
                     </div>
                     <div class="wrapper">
-                        <!-- <input type="checkbox" id="fourteen" value="14"> -->
-                        <input type="radio" id="fourteen" value="14" name="size">
-                        <label for="fourteen">14</label>
-                    </div>
-                    <div class="wrapper">
-                        <!-- <input type="checkbox" id="Fifteen" value="15"> -->
-                        <input type="radio" id="Fifteen" value="15" name="size">
-                        <label for="Fifteen">15</label>
+                        <input type="checkbox" id="Half" value="half" v-model="half">
+                        <label for="Half">Half Size Up?</label>
                     </div>
                 </div>
             </div>
             <div class="filter-menu">
-                <div class="title-wrapper">
+                <div class="title-wrapper" @click="toggleFilterMenu">
                     <h1 class="title">Filters:</h1>
-                    <RightArrow @click="toggleFilterMenu" class="icon" :class="{'icon-active' : filterMenu }"/>
+                    <RightArrow class="icon" :class="{'icon-active' : filterMenu }"/>
                 </div>
                 <div v-show="filterMenu" class="size-wrapper">
-                    <label class="filter-title" for="ONE">Filter Major</label>
-                    <div class="minor-wrapper">
-                        <input type="radio" class="" id="ONE" value="" name="Filter Minor" checked>
+                    <label class="filter-title" for="ONE" @click="toggleFirstFilterMenu">
+                        Filter Major
+                        <RightArrow class="icon" :class="{'icon-active' : firstFilterMenu }"/>
+                    </label>
+                    <div v-show="firstFilterMenu" class="minor-wrapper">
+                        <input type="radio" id="ONE" value="" name="Filter Minor" v-model="first" checked>
                         <label for="ONE" class="label">Any</label>
                     </div>
-                    <div class="minor-wrapper">
-                        <input type="radio" class="" id="TWO" value="" name="Filter Minor">
+                    <div v-show="firstFilterMenu" class="minor-wrapper">
+                        <input type="radio" id="TWO" value="Stock" name="Filter Minor" v-model="first">
                         <label for="TWO">Filter Minor</label>
                     </div>
-                    <div class="minor-wrapper">
-                        <input type="radio" class="" id="THREE" value="" name="Filter Minor">
+                    <div v-show="firstFilterMenu" class="minor-wrapper">
+                        <input type="radio" id="THREE" value="THREE" name="Filter Minor" v-model="first">
                         <label for="THREE">Filter Minor</label>
                     </div>
-                    <div class="minor-wrapper">
-                        <input type="radio" class="" id="FOUR" value="" name="Filter Minor">
+                    <div v-show="firstFilterMenu" class="minor-wrapper">
+                        <input type="radio" id="FOUR" value="FOUR" name="Filter Minor" v-model="first">
                         <label for="FOUR">Filter Minor</label>
                     </div>
-                    <label class="filter-title" for="ONE">Filter Major2</label>
-                    <div class="minor-wrapper">
-                        <input type="radio" class="" id="1" value="" name="Filter Minor2" checked>
+                    <label class="filter-title" for="1" @click="toggleSecondFilterMenu">
+                        Filter Major2
+                        <RightArrow class="icon" :class="{'icon-active' : secondFilterMenu }"/>
+                    </label>
+                    <div v-show="secondFilterMenu" class="minor-wrapper">
+                        <input type="radio" id="1" value="" name="Filter Minor2" v-model="second" checked>
                         <label for="1" class="label">Any</label>
                     </div>
-                    <div class="minor-wrapper">
-                        <input type="radio" class="" id="2" value="" name="Filter Minor2">
+                    <div v-show="secondFilterMenu" class="minor-wrapper">
+                        <input type="radio" id="2" value="Price" name="Filter Minor2" v-model="second">
                         <label for="2">Filter Minor2</label>
                     </div>
-                    <div class="minor-wrapper">
-                        <input type="radio" class="" id="3" value="" name="Filter Minor2">
+                    <div v-show="secondFilterMenu" class="minor-wrapper">
+                        <input type="radio" id="3" value="3" name="Filter Minor2" v-model="second">
                         <label for="3">Filter Minor2</label>
                     </div>
-                    <label class="filter-title" for="ONE">Filter Major3</label>
-                    <div class="minor-wrapper">
-                        <input type="radio" class="" id="I" value="" name="Filter Minor3" checked>
+                    <label class="filter-title" for="I" @click="toggleThirdFilterMenu">
+                        Filter Major3
+                        <RightArrow class="icon" :class="{'icon-active' : thirdFilterMenu }"/>
+                    </label>
+                    <div v-show="thirdFilterMenu" class="minor-wrapper">
+                        <input type="radio" id="I" value="" name="Filter Minor3" v-model="third" checked>
                         <label for="I" class="label">Any</label>
                     </div>
-                    <div class="minor-wrapper">
-                        <input type="radio" class="" id="II" value="" name="Filter Minor3">
+                    <div v-show="thirdFilterMenu" class="minor-wrapper">
+                        <input type="radio" id="II" value="Space" name="Filter Minor3" v-model="third">
                         <label for="II">Filter Minor3</label>
                     </div>
                 </div>
             </div>
             <div class="kind-menu">
                 <label for="kind">One of a Kind?</label>
-                <input type="checkbox" id="kind" value="true" name="kind">
+                <input type="checkbox" id="kind" value="true" name="kind" v-model="oneOfAKind">
+            </div>
+            <div class="kind-menu">
+                <label for="in-stocked">In Stock?</label>
+                <input type="checkbox" id="in-stocked" value="true" name="in-stocked" v-model="inStock">
             </div>
         </div>
-        <ProductGrid :queryArray="queryArray" class="product-grid"/>
+        <ProductGrid :queryArray="queryArray" :loading="loading" class="product-grid"/>
     </section>
   </div>
 </template>
@@ -201,8 +181,8 @@
 <script>
 import ProductGrid from "../components/ProductGrid.vue"
 import RightArrow from "../assets/Icons/rightarrow.svg"
-import { getFirestore, where, collection, limit, getDocs, query } from "firebase/firestore"
-import { firebaseApp } from "../firebase/firebaseInit.js"
+import { where, collection, limit, getDocs, query, orderBy } from "firebase/firestore"
+import { db } from "../firebase/firebaseInit.js"
 
 export default {
     name: "Shop",
@@ -213,6 +193,29 @@ export default {
             metalFilter: null,
             sizeFilter: null,
             filterMenu: null,
+            sortedBy: "",
+            metalMaterial: "",
+            size: "",
+            half: null,
+            oneOfAKind: false,
+            filters: [],
+            first: "",
+            second: "",
+            third: "",
+            firstFilterMenu: false,
+            secondFilterMenu: false,
+            thirdFilterMenu: false,
+            inStock: false,
+            loading: true,
+            oldQuerry: {
+                "filters" : [],
+                "route" : this.$route.params.category,
+                "metalMaterial": "",
+                "fullSize" : "",
+                "inStock" : false,
+                "oneOfAKind" : false,
+                "sortedBy" : ""
+            },
         }
     },
     components: {
@@ -231,11 +234,8 @@ export default {
     },
     methods: {
         async initialQuerry(route) {
-            this.queryArray = []
-            const db = getFirestore(firebaseApp);
-            // const route = this.$route.params.category;
-            console.log(route)
-
+            this.loading = true;
+            this.initialQueryList = []
             if (route != "all") {
                 this.initialQueryList[0] = { 
                     property: 'itemType', 
@@ -249,18 +249,122 @@ export default {
 
                 const queryToPreform = query(collection(db, 'products'), ...queryConditions, limit(24))
                 const querySnapshot = await getDocs(queryToPreform);
-
+                this.queryArray = []
                 querySnapshot.forEach((doc) => {
                     this.queryArray.push(doc)
                 });
             } else {
                 const queryToPreform = query(collection(db, 'products'), limit(24))
                 const querySnapshot = await getDocs(queryToPreform);
-                
+                this.queryArray = []
                 querySnapshot.forEach((doc) => {
                     this.queryArray.push(doc)
                 });
             }
+            this.loading = false;
+        },
+        async formQuerry() {
+            this.loading = true;
+            this.filters = []
+            if (this.first) {
+                this.filters.push(this.first)
+            }
+            if (this.second) {
+                this.filters.push(this.second)
+            }
+            if (this.third) {
+                this.filters.push(this.third)
+            }
+            
+            this.initialQueryList = []
+            const route = this.$route.params.category;
+            if (route != "all") {
+                this.initialQueryList.push({ 
+                    property: 'itemType', 
+                    operator: '==', 
+                    value: route,
+                })
+            }
+            if (this.metalMaterial) {
+                this.initialQueryList.push({
+                    property: 'metalMaterial',
+                    operator: '==',
+                    value: this.metalMaterial,
+                })
+            }
+            if (this.size) {
+                let sizeQuerry = "sizesBool." + this.size
+                if (this.half) {
+                    sizeQuerry = sizeQuerry += "5"
+                }
+                this.initialQueryList.push({
+                    property: sizeQuerry,
+                    operator: '==',
+                    value: true
+                })
+            } else if (this.inStock) {
+                this.initialQueryList.push({
+                    property: 'itemInStock',
+                    operator: '==',
+                    value: true,
+                })
+            }
+            if (this.oneOfAKind) {
+                this.initialQueryList.push({
+                    property: 'oneOfAKind',
+                    operator: '==',
+                    value: true,
+                })
+            }
+            if (this.filters.length > 0) {
+                this.initialQueryList.push({
+                    property: 'filters',
+                    operator: 'array-contains-any',
+                    value: this.filters,
+                })
+            }
+
+            const queryConditions = this.initialQueryList.map((condition) =>
+                where(condition.property, condition.operator, condition.value)
+            );
+
+            let queryToPreform;
+            if (this.sortedBy) {
+                if (this.sortedBy.includes("desc")) {
+                    let directQ = this.sortedBy.substring(0, this.sortedBy.length - 5)
+                    queryToPreform = query(collection(db, 'products'), ...queryConditions, orderBy(directQ, "desc"), limit(24))
+                } else {
+                    queryToPreform = query(collection(db, 'products'), ...queryConditions, orderBy(this.sortedBy),  limit(24))
+                }
+            } else {
+                queryToPreform = query(collection(db, 'products'), ...queryConditions, limit(24))
+            }
+
+            const fullSize = this.half ? this.size + "5" : this.size;
+            const newQuerry =  {
+                "filters" : this.filters,
+                "route" : route,
+                "metalMaterial": this.metalMaterial,
+                "fullSize" : fullSize,
+                "inStock" : this.inStock,
+                "oneOfAKind" : this.oneOfAKind,
+                "sortedBy" : this.sortedBy,
+            };
+
+            if (JSON.stringify(this.oldQuerry) === JSON.stringify(newQuerry)) {
+                console.log("SAME QUERRY")
+                this.loading = false;
+                return;
+            }
+            this.oldQuerry = newQuerry;
+            const querySnapshot = await getDocs(queryToPreform);
+            // attempt to reinstantiate the array with documents one at a time
+            this.queryArray = []
+            querySnapshot.forEach((doc) => {
+                this.queryArray.push(doc)
+            });
+
+            this.loading = false;
         },
         toggleMetalFilter() {
             this.metalFilter = !this.metalFilter;
@@ -270,15 +374,38 @@ export default {
         },
         toggleFilterMenu() {
             this.filterMenu = !this.filterMenu;
+        },
+        toggleFirstFilterMenu() {
+            this.firstFilterMenu = !this.firstFilterMenu;
+        },
+        toggleSecondFilterMenu() {
+            this.secondFilterMenu = !this.secondFilterMenu;
+        },
+        toggleThirdFilterMenu() {
+            this.thirdFilterMenu = !this.thirdFilterMenu;
+        },
+        cancelQuerry() {
+            this.metalFilter = false;
+            this.sizeFilter = false;
+            this.filterMenu = false;
+            this.sortedBy = "";
+            this.metalMaterial = "";
+            this.size = "";
+            this.half = false;
+            this.oneOfAKind = false;
+            this.inStock = false;
+            this.firstFilterMenu = false;
+            this.secondFilterMenu = false;
+            this.thirdFilterMenu = false;
+            this.first = "";
+            this.second = "";
+            this.third = "";
         }
     },
     async beforeMount() {
-        console.log("route", this.$route)
         await this.initialQuerry(this.$route.params.category)
     },
     async beforeRouteUpdate(to, from, next) {
-        console.log("to", to)
-        console.log("from", from)
         // Going from Shop View to Shop view and it isn't from the same parameter (might not be a problem)
         if (to.name == from.name && to.params.category != from.params.category) {
             await this.initialQuerry(to.params.category)
@@ -357,6 +484,8 @@ export default {
             position: relative;
             background-color: #ebebeb;
             box-shadow: 0.25px 0.25px 3.5px #ababab;
+            height: min-content;
+            min-height: 600px;
 
             .top-tab {
                 display: flex;
@@ -418,6 +547,17 @@ export default {
                     .title {
                         font-size: 1.5rem;
                         user-select: none;
+                        position: relative;
+                    }
+
+                    .title::before {
+                        content: "";
+                        position: absolute;
+                        bottom: -0.1rem;
+                        left: 15px;
+                        width: 255px;
+                        height: 0.1rem;
+                        background-color: #000;
                     }
 
                     .icon {
@@ -474,7 +614,13 @@ export default {
 
                         label {
                             font-size: 1.25rem;
+                            user-select: none;
                         }
+                    }
+
+                    .wrapper:last-child {
+                        grid-column: 1;
+                        min-width: 230px;
                     }
                 }
             }
@@ -493,11 +639,23 @@ export default {
                     }
 
                     .filter-title {
+                        position: relative;
                         text-align: left;
                         font-weight: 600;
                         font-size: 1.125rem;
                         letter-spacing: 0.5px;
                         user-select: none;
+
+                        .icon {
+                            position: absolute;
+                            top: 0;
+                            right: 0;
+                            transition: transform 0.25s ease-in-out;
+                        }
+
+                        .icon-active {
+                            transform: rotate(90deg);
+                        }
                     }
                 }
             }
@@ -508,7 +666,6 @@ export default {
                 align-self: center;
                 align-items: center;
                 gap: 15px;
-                margin-bottom: 30px;
 
                 label {
                     user-select: none;
@@ -525,6 +682,10 @@ export default {
                     width: 1rem;
                     height: 1rem;
                 }
+            }
+
+            .kind-menu:last-child {
+                margin-bottom: 20px;
             }
         
         }

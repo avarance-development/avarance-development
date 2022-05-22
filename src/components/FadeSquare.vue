@@ -4,7 +4,7 @@
     <img class="second" :src="doc.itemPictures[1]" alt="Hover Photo" />
     <h6 class="metal-description">{{  doc.metalMaterial  }}</h6>
     <h2 class="product-title">{{  doc.itemName  }}</h2>
-    <h3 class="product-price">${{  doc.itemPrice  }}</h3>
+    <h3 class="product-price">${{  doc.itemPrice.toFixed(2)  }}</h3>
   </router-link>
 </template>
 
@@ -26,7 +26,7 @@ export default {
   .first {
     aspect-ratio: 1 / 1;
     object-fit: cover;
-    max-width: 100%;
+    width: 100%;
     height: auto;
     opacity: 1;
   }
@@ -37,7 +37,7 @@ export default {
   .second {
     aspect-ratio: 1 / 1;
     object-fit: cover;
-    max-width: 100%;
+    width: 100%;
     height: auto;
     position: absolute;
     top: 0;

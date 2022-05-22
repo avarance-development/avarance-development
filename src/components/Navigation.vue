@@ -117,8 +117,8 @@ import Exit from  "../assets/Icons/exit.svg"
 import Saved from "../assets/Icons/bookmark.svg"
 import Admin from "../assets/Icons/admin.svg"
 import Close from "../assets/Icons/cross.svg"
-import { getAuth, signOut } from "firebase/auth"
-import { firebaseApp } from "../firebase/firebaseInit.js"
+import { signOut } from "firebase/auth"
+import { auth } from "../firebase/firebaseInit.js"
 
 export default {
     name: "Navigation",
@@ -186,7 +186,6 @@ export default {
             }
         },
         signOut() {
-            const auth = getAuth(firebaseApp);
             signOut(auth);
             window.location.reload();
             // firebase.auth().signOut();

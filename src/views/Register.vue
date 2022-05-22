@@ -37,9 +37,9 @@
 import Email from "../assets/Icons/email.svg"
 import Password from "../assets/Icons/password.svg"
 import Login from "../assets/Icons/login.svg"
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth"
-import { getFirestore, doc, setDoc } from "firebase/firestore"
-import { firebaseApp } from "../firebase/firebaseInit.js"
+import { createUserWithEmailAndPassword } from "firebase/auth"
+import { doc, setDoc } from "firebase/firestore"
+import { db, auth } from "../firebase/firebaseInit.js"
 
 export default {
     name: "Register",
@@ -61,10 +61,8 @@ export default {
     methods: {
         async register() {
             this.error = '';
-            const auth = getAuth(firebaseApp);
             const createUser = await createUserWithEmailAndPassword(auth, this.email, this.password);
             const result = await createUser;
-            const db = getFirestore();
             const docRef = doc(db, 'users', result.user.uid)
             await setDoc(docRef, {
                 firstName: this.firstname,

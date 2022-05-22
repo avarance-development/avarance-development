@@ -9,11 +9,11 @@
       </div>
       <div class="input-wrapper">
         <label for="itemPrice">Item Price: </label>
-        <input placeholder="Item Price" v-model="itemPrice" class='input' type="number" id="itemPrice" required="required">
+        <input placeholder="Item Price" v-model.number.lazy="itemPrice" class='input' type="number" id="itemPrice" required="required" min="0" step="0.01">
       </div>
       <div class="input-wrapper">
         <label for="itemDiscount">Item Discount: </label>
-        <input placeholder="Item Discount" v-model="itemDiscount" class='input range' type="range" id="itemDiscount" required="required" min="0" max="0.5" step="0.01">
+        <input placeholder="Item Discount" v-model.number.lazy="itemDiscount" class='input range' type="range" id="itemDiscount" required="required" min="0" max="0.5" step="0.01">
         <p class="discount">{{  itemDiscount  }}</p>
       </div>
       <div class="input-wrapper">
@@ -64,9 +64,9 @@
         <label for="oneOfAKind">One of a Kind?</label>
         <input v-model="oneOfAKind" class='input one' type="checkbox" id="oneOfAKind">
       </div>
-      <div class="quantity" v-for="(value, item, index) in itemSizes" :key="index">
-        <label for="quantity">{{  item  }}: </label>
-        <input type='number' min="0" value="0" v-model.number.lazy="itemSizeArray[index + 1]" id="quantity">
+      <div class="quantity" v-for="(value, item, index) in range(20, 4)" :key="index">
+        <label for="quantity" :class="value % 1 == 0 ? '' : 'is-half-margin'">{{ value}}: </label>
+        <input type='number' :class="value % 1 == 0 ? '' : 'is-half-width'" min="0" value="0" v-model.number="itemSizeArray[item]" id="quantity">
       </div>
       <p class='error' v-show="error">{{ error }}</p>
       <button class='btn submit' type="submit" style="margin-top: 10px">Create a New Product</button>
@@ -78,8 +78,8 @@
 import Cross from "../assets/Icons/cross.svg"
 import Loading from "../components/Loading.vue"
 import { compress, filetoDataURL } from 'image-conversion';
-import { getFirestore, collection, setDoc, doc } from "firebase/firestore"; 
-import { firebaseApp, timestamp } from "../firebase/firebaseInit.js"
+import { collection, setDoc, doc } from "firebase/firestore"; 
+import { db, timestamp } from "../firebase/firebaseInit.js"
 
 export default {
   name: "CreateProduct",
@@ -98,24 +98,7 @@ export default {
       oneOfAKind: false,
       popularity: 0,
       itemTotalQuantity: 0,
-      itemSizeArray: new Array(16).fill(0),
-      itemSizes: {
-        1: 0,
-        2: 0,
-        3: 0,
-        4: 0,
-        5: 0,
-        6: 0,
-        7: 0,
-        8: 0,
-        9: 0,
-        10: 0,
-        11: 0,
-        12: 0,
-        13: 0,
-        14: 0,
-        15: 0,
-      },
+      itemSizeArray: new Array(20).fill(0),
       error: "",
       loading: false,
     }
@@ -165,41 +148,69 @@ export default {
       const total = this.itemSizeArray.reduce((partialSum, next) => partialSum + next, 0)
       const pics = [this.coverPicture, this.hoverPicture]
       const picArr = pics.concat(this.itemPictures)
-      const db = getFirestore(firebaseApp)
       const newProductRef = collection(db, "products")
       const productID  = doc(newProductRef).id
       await setDoc(doc(db, "products", productID), {
         itemID: productID,
         itemName: this.itemName,
         itemType: this.itemType,
-        itemPrice: this.itemPrice,
+        itemPrice: Math.round((this.itemPrice - (this.itemDiscount * this.itemPrice) + Number.EPSILON) * 100) / 100,
+        itemOriginalPrice: this.itemPrice,
         itemDiscount: this.itemDiscount,
         metalMaterial: this.metalMaterial,
         filters: this.filters,
         itemTotalQuantity: total,
+        itemInStock: total != 0 ? true : false,
         itemSizes: {
-          1: this.itemSizeArray[1],
-          2: this.itemSizeArray[2],
-          3: this.itemSizeArray[3],
-          4: this.itemSizeArray[4],
-          5: this.itemSizeArray[5],
-          6: this.itemSizeArray[6],
-          7: this.itemSizeArray[7],
+          4: this.itemSizeArray[0],
+          45: this.itemSizeArray[1],
+          5: this.itemSizeArray[2],
+          55: this.itemSizeArray[3],
+          6: this.itemSizeArray[4],
+          65: this.itemSizeArray[5],
+          7: this.itemSizeArray[6],
+          75: this.itemSizeArray[7],
           8: this.itemSizeArray[8],
-          9: this.itemSizeArray[9],
-          10: this.itemSizeArray[10],
-          11: this.itemSizeArray[11],
-          12: this.itemSizeArray[12],
-          13: this.itemSizeArray[13],
-          14: this.itemSizeArray[14],
-          15: this.itemSizeArray[15],
+          85: this.itemSizeArray[9],
+          9: this.itemSizeArray[10],
+          95: this.itemSizeArray[11],
+          10: this.itemSizeArray[12],
+          105: this.itemSizeArray[13],
+          11: this.itemSizeArray[14],
+          115: this.itemSizeArray[15],
+          12: this.itemSizeArray[16],
+          125: this.itemSizeArray[17],
+          13: this.itemSizeArray[18],
+          135: this.itemSizeArray[19],
+        },
+        sizesBool: {
+          4: this.itemSizeArray[0] != 0 ? true : false,
+          4_5: this.itemSizeArray[1] != 0 ? true : false,
+          5: this.itemSizeArray[2] != 0 ? true : false,
+          5_5: this.itemSizeArray[3] != 0 ? true : false,
+          6: this.itemSizeArray[4] != 0 ? true : false,
+          6_5: this.itemSizeArray[5] != 0 ? true : false,
+          7: this.itemSizeArray[6] != 0 ? true : false,
+          7_5: this.itemSizeArray[7] != 0 ? true : false,
+          8: this.itemSizeArray[8] != 0 ? true : false,
+          8_5: this.itemSizeArray[9] != 0 ? true : false,
+          9: this.itemSizeArray[10] != 0 ? true : false,
+          9_5: this.itemSizeArray[11] != 0 ? true : false,
+          10: this.itemSizeArray[12] != 0 ? true : false,
+          10_5: this.itemSizeArray[13] != 0 ? true : false,
+          11: this.itemSizeArray[14] != 0 ? true : false,
+          11_5: this.itemSizeArray[15] != 0 ? true : false,
+          12: this.itemSizeArray[16] != 0 ? true : false,
+          12_5: this.itemSizeArray[17] != 0 ? true : false,
+          13: this.itemSizeArray[18] != 0 ? true : false,
+          13_5: this.itemSizeArray[19] != 0 ? true : false,
         },
         itemPictures: picArr,
         oneOfAKind: this.oneOfAKind,
         popularity: 0,
         timeAdded: timestamp,
       }).catch((err) => {
-        console.log(err)
+        this.error = err
       });
 
       this.resetForm();
@@ -216,24 +227,10 @@ export default {
       document.getElementById("hover").value = "";
       this.itemPictures = []
       this.oneOfAKind = false
-      this.itemSizeArray = new Array(16).fill(0)
-      this.itemSizes = {
-        1: 0,
-        2: 0,
-        3: 0,
-        4: 0,
-        5: 0,
-        6: 0,
-        7: 0,
-        8: 0,
-        9: 0,
-        10: 0,
-        11: 0,
-        12: 0,
-        13: 0,
-        14: 0,
-        15: 0,
-      }
+      this.itemSizeArray = new Array(20).fill(0)
+    },
+    range(size, startAt = 0) {
+      return [...Array(size).keys()].map(i => i/2 + startAt);
     }
   },
 }
@@ -334,6 +331,18 @@ export default {
     .quantity {
       width: fit-content;
       margin: 0 auto 2px auto;
+
+      input {
+        width: 250px;
+      }
+
+      .is-half-width {
+        width: 230px;
+      }
+
+      .is-half-margin {
+        margin-left: 10px;
+      }
     }
   }
 }

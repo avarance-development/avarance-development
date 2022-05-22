@@ -9,8 +9,8 @@
 <script>
 import Navigation from "./components/Navigation.vue"
 import Footer from "./components/Footer.vue"
-import { getAuth, onAuthStateChanged } from "firebase/auth"
-import { firebaseApp } from "./firebase/firebaseInit.js"
+import { onAuthStateChanged } from "firebase/auth"
+import { auth } from "./firebase/firebaseInit.js"
 
 export default {
   name: "App",
@@ -24,7 +24,6 @@ export default {
     Footer,
   },
   created() {
-    const auth = getAuth(firebaseApp);
     onAuthStateChanged(auth, async (user) => {
       this.$store.commit("updateUser", user);
       if(user) {
@@ -92,5 +91,9 @@ export default {
 
 html[data-theme='dark'] {
   --bg: #222222;
+}
+
+label {
+  user-select: none;
 }
 </style>

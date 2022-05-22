@@ -1,8 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { getAuth } from "firebase/auth"
-import { getFirestore, doc, getDoc } from "firebase/firestore"
-import { firebaseApp } from "../firebase/firebaseInit.js"
+import { doc, getDoc } from "firebase/firestore"
+import { auth, db } from "../firebase/firebaseInit.js"
 
 Vue.use(Vuex)
 
@@ -74,8 +73,6 @@ export default new Vuex.Store({
   },
   actions: {
     async getCurrentUser({ commit }, user) {
-      const db = getFirestore(firebaseApp);
-      const auth = getAuth(firebaseApp);
       const userID = auth.currentUser.uid;
       const docRef = doc(db, 'users', userID)
       const currentDoc = await getDoc(docRef);
