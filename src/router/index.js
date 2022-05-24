@@ -78,6 +78,7 @@ const routes = [
     path: '/:category/:productId',
     name: 'ViewProduct',
     component: () => import('../views/ViewProduct.vue'),
+    props: true,
     meta: {
       title: "View Product",
     }

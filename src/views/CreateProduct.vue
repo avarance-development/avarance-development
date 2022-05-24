@@ -57,7 +57,7 @@
         <label for="images">Product Images: </label>
         <input placeholder="Product Images" class='input' type="file" id="images" @change="onFileChange" multiple accept="jpeg,jpg">
         <div class="image-wrapper">
-          <img v-for="(item, index) in itemPictures" :key="index" :src="itemPictures[index]">
+          <img v-for="(item, index) in itemPictures" :key="index" :src="item">
         </div>
       </div>
       <div class="input-wrapper">
@@ -292,7 +292,7 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
-        flex-direction: center;
+        flex-wrap: wrap;
         gap: 5px;
 
         img {

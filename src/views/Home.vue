@@ -5,9 +5,6 @@
       Shop Our Entire Catalog
     </router-link>
     <ProductGrid :queryArray="queryArray" class="grid"/>
-    <div class="pagination">
-      PAGINATION TO BE IMPLEMENTED
-    </div>
   </section>
 </template>
 
@@ -121,17 +118,6 @@ export default {
 
   .grid {
     order: 3;
-  }
-
-  .pagination {
-    order: 4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 150px;
-    background-color: rgba(0,0,0,0.6);
-    margin-bottom: 20px;
   }
 }
 

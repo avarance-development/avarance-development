@@ -102,7 +102,7 @@
                         <input type="radio" id="thirteen" value="13" name="size" v-model="size">
                         <label for="thirteen">13</label>
                     </div>
-                    <div class="wrapper">
+                    <div class="wrapper half">
                         <input type="checkbox" id="Half" value="half" v-model="half">
                         <label for="Half">Half Size Up?</label>
                     </div>
@@ -175,6 +175,9 @@
         </div>
         <ProductGrid :queryArray="queryArray" :loading="loading" class="product-grid"/>
     </section>
+    <div class="pagination">
+        <h1>PAGINATION TO BE IMPLEMENTED</h1>
+    </div>
   </div>
 </template>
 
@@ -431,14 +434,22 @@ export default {
         .routing {
             display: flex;
             flex-direction: row;
+            align-items: center;
             gap: 5px;
+            flex-wrap: wrap;
+            justify-content: center;
 
             .link {
                 position: relative;
                 text-decoration: none;
                 color: #000;
                 letter-spacing: 0.5px;
-                
+                white-space: nowrap;
+                font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+
+                @media (max-width: 500px) {
+                    font-size: 0.75rem;
+                }
             }
 
             .link::before {
@@ -458,22 +469,40 @@ export default {
 
             .arrow {
                 color: #606060;
+                white-space: nowrap;
+                font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+                
+                @media (max-width: 500px) {
+                    font-size: 0.75rem;
+                }
             }
         }
 
         .title {
             font-size: 2rem;
             letter-spacing: 1px;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            @media (max-width: 500px) {
+                font-size: 1.5rem;
+            }
         }
 
         .subtitle {
             font-size: 0.75rem;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            @media (max-width: 500px) {
+                font-size: 0.5rem;
+            }
         }
     }
 
     .container {
         display: flex;
         flex-direction: row;
+
+        @media(max-width: 800px) {
+            flex-direction: column;
+        }
 
         .aside {
             display: flex;
@@ -485,7 +514,15 @@ export default {
             background-color: #ebebeb;
             box-shadow: 0.25px 0.25px 3.5px #ababab;
             height: min-content;
-            min-height: 600px;
+            min-height: 500px;
+
+
+            @media(max-width: 800px) {
+                gap: 15px;
+                min-width: unset;
+                min-height: unset;
+                margin: 0 20px 10px 20px;
+            }
 
             .top-tab {
                 display: flex;
@@ -493,6 +530,10 @@ export default {
                 justify-content: space-between;
                 align-items: center;
                 padding: 10px 10px 10px 10px;
+
+                @media(max-width: 800px) {
+                    padding: 10px 10px 0 10px;
+                }
 
                 .cancel {
                     color: #606060;
@@ -522,11 +563,20 @@ export default {
                 display: flex;
                 flex-direction: column;
 
+                @media(max-width: 800px) {
+                    align-content: center;
+                }
+
                 .sort {
                     width: fit-content;
                     margin: 0 0 5px 22.5px;
                     font-weight: 500;
                     font-size: 1.5rem;
+
+                    @media(max-width: 800px) {
+                        width: unset;
+                        margin: 0 0 10px 0;
+                    }
                 }
 
                 .selection {
@@ -558,6 +608,17 @@ export default {
                         width: 255px;
                         height: 0.1rem;
                         background-color: #000;
+
+                        @media(max-width: 800px) {
+                            max-width: 100%;
+                            left: 50%;
+                            transform: translate(-50%);
+                        }
+                    }
+
+                    @media(max-width: 800px) {
+                        left: 50%;
+                        transform: translateX(-50%);
                     }
 
                     .icon {
@@ -594,6 +655,12 @@ export default {
                             cursor: pointer;
                         }
                     }
+
+                    .wrapper:last-child {
+                        grid-column: 2;
+                        min-width: 230px;
+                        grid-row: 4;
+                    }
                 }
 
                 .size-wrapper {
@@ -618,9 +685,13 @@ export default {
                         }
                     }
 
-                    .wrapper:last-child {
-                        grid-column: 1;
+                    .half {
                         min-width: 230px;
+                        grid-column: 1;
+
+                        @media(max-width: 800px) {
+                            min-width: calc(100vw - 95px);
+                        }
                     }
                 }
             }
@@ -694,7 +765,18 @@ export default {
             display: flex;
             flex-direction: column;
             flex-basis: 100%;
+            min-height: 800px;
         }
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: 300px;
+        height: 150px;
+        background-color: rgba(0,0,0,0.6);
+        margin-bottom: 20px;
     }
 }
 

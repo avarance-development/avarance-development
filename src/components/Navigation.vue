@@ -93,7 +93,7 @@
                 <h1>Your Cart: ({{  this.$store.state.cart.length  }})</h1>
                 <Close @click="toggleCartNav" class="icon" :class="{'icon-active' : cartNav }"/>
               </div>
-              <li v-for="(product, index) in this.$store.state.cart" :key="product.itemName" class="cart-item">
+              <li v-for="(product, index) in this.$store.state.cart" :key="product.itemID" class="cart-item">
                 <img class="cart-img" :src="product.itemPictures[index]">
                 <h1 class="cart-itemName">{{ product.itemName }}</h1>
                 <h3 class="cart-metalMat">{{ product.metalMaterial }}</h3>
@@ -188,8 +188,6 @@ export default {
         signOut() {
             signOut(auth);
             window.location.reload();
-            // firebase.auth().signOut();
-            // window.location.reload();
         }
     }
 }

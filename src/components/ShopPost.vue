@@ -83,6 +83,7 @@ export default {
             font-size: 32px;
             font-weight: 300;
             margin-bottom: 16px;
+            max-width: 40vw;
             
             @media(max-width: 700px) {
                 font-size: 24px;
@@ -93,10 +94,8 @@ export default {
 
         .content-preview {
             font-size: 13px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
             color: gray;
+            max-width: 40vw;
 
             @media(max-width: 700px) {
                 font-size: 12px;

@@ -31,14 +31,6 @@ export default {
       }
     });
     this.checkRoute();
-
-    // firebase.auth().onAuthStateChanged((user) => {
-    //   this.$store.commit("updateUser", user);
-    //   if(user) {
-    //     this.$store.dispatch("getCurrentUser")
-    //   }
-    // })
-    // this.checkRoute();
   },
   methods: {
     checkRoute() {

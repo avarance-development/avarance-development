@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { doc, getDoc } from "firebase/firestore"
 import { auth, db } from "../firebase/firebaseInit.js"
+import createPersistedState from "vuex-persistedstate";
 
 Vue.use(Vuex)
 
@@ -54,6 +55,7 @@ export default new Vuex.Store({
         timeAdded: "April 26, 2022 at 10:23:24 PM UTC-7",
       },
     ],
+    currentItem: null,
   },
   mutations: {
     updateUser(state, payload) {
@@ -69,6 +71,10 @@ export default new Vuex.Store({
     setProfileAdmin(state, payload) {
       state.profileAdmin = payload
       console.log(payload)
+    },
+    setCurrentItem(state, payload) {
+      state.currentItem = payload
+      console.log("state committing", payload)
     }
   },
   actions: {
@@ -80,12 +86,9 @@ export default new Vuex.Store({
       const token = await user.getIdTokenResult()
       const admin = await token.claims.admin;
       commit('setProfileAdmin', admin)
-      // const dataBase = await db.collection('users').doc(firebase.auth().currentUser.uid)
-      // const dbResults = await dataBase.get()
-      // commit("setProfileInfo", dbResults)
-      // console.log(dbResults)
     }
   },
   modules: {
-  }
+  },
+  plugins: [createPersistedState()]
 })
