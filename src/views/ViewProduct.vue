@@ -34,27 +34,30 @@
         </div>
       </div>
       <div class="item-info-container">
-        <!-- :style="{ '--sliderIndex' : example}" -->
         <h1 class="info-title">{{ title }}</h1>
         <p class="info-metal">{{ metal }}</p>
-        <h3 class="info-price">Price for All Sizes: ${{ price }}</h3>
-        <p class="info">Part of our {{ currentCategory }} Collection, made out of {{ metal }}, 
-          <span 
-            v-if="metal == 'Sterling Silver'">
-            this {{ this.$route.params.category.substr(0, this.$route.params.category.length - 1) }}
-          </span>
+        <h3 class="info-price">Price for All Sizes: ${{ price.toFixed(2) }}</h3>
+        <p class="info">Part of our {{ currentCategory.substr(0, currentCategory.length - 1) }} Collection, made out of {{ metal }}, 
+          this {{ this.$route.params.category.substr(0, this.$route.params.category.length - 1) }}
           serves as a great gift or a nice jewelry piece.
         </p>
         <p class="select-size">Selected {{ currentCategory.substr(0, currentCategory.length - 1)}} Size: {{ selectedSize }}</p>
         <div class="sizes-grid">
           <div class="size" v-for="(value, item, index) in range(20, 4)" :key="index">
-            <input :disabled="!sizeMapBool[Number(value.toString().replace('.', ''))]" class="radio" type="radio" v-model.number="selectedSize" :value="value" name="sizes">
+            <input :disabled="!sizeMapBool[Number(value.toString().replace('.', ''))]" @click="resetQuantity" class="radio" type="radio" v-model.number="selectedSize" :value="value" name="sizes">
             <span class="label">{{value}}</span>
             <img v-if="!sizeMapBool[Number(value.toString().replace('.', ''))]" class="crossed-out" src="@/assets/cross.jpg">
           </div>
         </div>
+        <label for="quantity">Quantity:</label>
+        <div class="quantity-slider">
+          <button @click="adjustQuantity(-1)">-</button>
+          <input v-model.number.lazy="quantity" type="number" id="quantity" min="0">
+          <button @click="adjustQuantity(1)">+</button>
+        </div>
+        <p v-show="addedToCart" class="addToCart">{{ addedToCart }}</p>
         <div class="button-container">
-          <button class="add-to-cart">
+          <button class="add-to-cart" @click="addToCart">
             Add to Cart
           </button>
           <button class="checkout">
@@ -89,7 +92,10 @@ export default {
         metal: null,
         selectedSize: null,
         sizeMapBool: {},
+        itemSizes: {},
         sliderIndex: 0,
+        quantity: 0,
+        addedToCart: "",
       }
   },
   props: ["item", "category", "productId"],
@@ -112,6 +118,7 @@ export default {
       this.title = this.$props.item.itemName;
       this.picArray = this.$props.item.itemPictures;
       this.sizeMapBool = this.$props.item.sizesBool;
+      this.itemSizes = this.$props.item.itemSizes;
       this.price = this.$props.item.itemPrice;
       this.metal = this.$props.item.metalMaterial;
       this.$store.commit("setCurrentItem", this.$props.item)
@@ -120,6 +127,7 @@ export default {
       this.title = this.$store.state.currentItem.itemName;
       this.picArray = this.$store.state.currentItem.itemPictures;
       this.sizeMapBool = this.$store.state.currentItem.sizesBool;
+      this.itemSizes = this.$store.state.currentItem.itemSizes;
       this.price = this.$store.state.currentItem.itemPrice;
       this.metal = this.$store.state.currentItem.metalMaterial;
       console.log("through the state")
@@ -130,6 +138,7 @@ export default {
       this.title = this.$store.state.currentItem.itemName;
       this.picArray = this.$store.state.currentItem.itemPictures;
       this.sizeMapBool = this.$store.state.currentItem.sizesBool;
+      this.itemSizes = this.$store.state.currentItem.itemSizes;
       this.price = this.$store.state.currentItem.itemPrice;
       this.metal = this.$store.state.currentItem.metalMaterial;
       console.log("through firebase")
@@ -143,6 +152,22 @@ export default {
     },
     setActivePicture(index) {
       this.activeIndex = index
+    },
+    resetQuantity() {
+      this.quantity = 0;
+    },
+    adjustQuantity(direction) {
+      if (this.selectedSize == null) {
+        return;
+      }
+
+      const mappedSize = this.itemSizes[Number(this.selectedSize.toString().replace('.', ''))]
+
+      if (direction == 1) {
+        this.quantity = Math.min(this.quantity + 1, mappedSize)
+      } else {
+        this.quantity = Math.max(this.quantity - 1, 0)
+      }
     },
     sliderShift(direction) {
       const sliders = document.getElementsByClassName("slider-image")
@@ -159,7 +184,7 @@ export default {
       }
       const movement = Math.min(itemsLeft, itemsPerScreen - 1)
       for (let i = 0; i < sliders.length; i++) {
-        let slider = sliders[i]
+        // let slider = sliders[i]
         const modular = this.modMath(sliderIndex + (direction * movement), this.picArray.length)
         if (direction == -1) {
           modular = Math.min(modular, this.picArray.length - itemsPerScreen)
@@ -176,11 +201,38 @@ export default {
         }
       }
     },
-    addToCart() {
-      // TO DO ADD STATE ADDING STUFF PLEASE IM TIRED
-      this.$store.state.cart.push({
-
-      })
+    async addToCart() {
+      console.log("adding to cart");
+      if (this.quantity <= 0) {
+        return;
+      }
+      if (this.selectedSize == null) {
+        return;
+      }
+      const item = this.$store.state.currentItem;
+      const mappedSize = item.itemSizes[Number(this.selectedSize.toString().replace('.', ''))]
+      const newID = item.itemID.concat(this.selectedSize.toString());
+      this.$store.commit("addItemToCart", {
+        itemID: item.itemID,
+        itemName: item.itemName,
+        itemMetalMaterial: item.metalMaterial,
+        itemPrice: item.itemPrice,
+        itemDiscount: item.itemDiscount,
+        itemOriginalPrice: item.itemOriginalPrice,
+        itemPicture: item.itemPictures[0],
+        itemSize: this.selectedSize,
+        itemQuantity: this.quantity,
+        maxQuantity: mappedSize,
+        oneOfAKind: item.oneOfAKind,
+        category: this.$route.params.category,
+        uniqueID: newID,
+      });
+      this.addedToCart = this.$store.state.message
+      console.log(this.$store.state.cart)
+      console.log(this.addedToCart)
+      await setTimeout(() => {
+        this.addedToCart = "";
+      }, 5000)
     },
     modMath(n, m) {
       return ((n % m) + m) % m;
@@ -417,17 +469,6 @@ export default {
         margin-bottom: 25px;
       }
 
-      .sizes-grid::after {
-        display: block;
-        content: "";
-        width: 100%;
-        left: 0;
-        bottom: -25px;
-        position: absolute;
-        border-bottom: black solid 3px;
-        cursor: default;
-      }
-
       .sizes-grid {
         display: grid;
         flex-direction: row;
@@ -436,6 +477,9 @@ export default {
         justify-items: center;
         gap: 10px;
         position: relative;
+        margin-bottom: 10px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid black;
 
         .size {
           position: relative;
@@ -465,12 +509,47 @@ export default {
         }
       }
 
+      .quantity-slider {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px 0 15px 0;
+
+        button {
+          height: 1.5rem;
+          width: 1.5rem;
+          background-color: #fff;
+          border-radius: 15%;
+          border: 1.5px solid black;
+          cursor: pointer;
+        }
+
+        input {
+          width: 9rem;
+          border: 1.5px solid black;
+          pointer-events: none;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+  
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+      }
+
       .button-container {
         display: flex;
         flex-direction: row;
         justify-content: center;
-        margin: 35px 0 15px 0;
+        margin: 10px 0 15px 0;
         gap: 5px;
+        padding-top: 15px;
+        border-top: 3px solid black;
 
         button {
           width: 35%;
@@ -488,11 +567,16 @@ export default {
         }
       }
 
+      .addToCart {
+        position: relative;
+      }
+
       .shipping-title {
+        display: inline-block;
         position: relative;
         font-size: 1rem;
         margin-bottom: 10px;
-        padding-bottom: 10px;
+        padding: 0 25px 10px 25px;
         border-bottom: 3px solid black;
       }
 

@@ -173,18 +173,15 @@
                 <input type="checkbox" id="in-stocked" value="true" name="in-stocked" v-model="inStock">
             </div>
         </div>
-        <ProductGrid :queryArray="queryArray" :loading="loading" class="product-grid"/>
+        <ProductGrid @shift-query="shiftQuery($event)" :currentPageNumber="currentPageNumber" :queryArray="queryArray" :loading="loading" class="product-grid"/>
     </section>
-    <div class="pagination">
-        <h1>PAGINATION TO BE IMPLEMENTED</h1>
-    </div>
   </div>
 </template>
 
 <script>
 import ProductGrid from "../components/ProductGrid.vue"
 import RightArrow from "../assets/Icons/rightarrow.svg"
-import { where, collection, limit, getDocs, query, orderBy } from "firebase/firestore"
+import { where, collection, limit, getDocs, query, orderBy, startAfter, endBefore } from "firebase/firestore"
 import { db } from "../firebase/firebaseInit.js"
 
 export default {
@@ -219,6 +216,8 @@ export default {
                 "oneOfAKind" : false,
                 "sortedBy" : ""
             },
+            limit: this.$store.state.limit,
+            currentPageNumber: 0,
         }
     },
     components: {
@@ -250,14 +249,14 @@ export default {
                     where(condition.property, condition.operator, condition.value)
                 );
 
-                const queryToPreform = query(collection(db, 'products'), ...queryConditions, limit(24))
+                const queryToPreform = query(collection(db, 'products'), ...queryConditions, limit(this.limit))
                 const querySnapshot = await getDocs(queryToPreform);
                 this.queryArray = []
                 querySnapshot.forEach((doc) => {
                     this.queryArray.push(doc)
                 });
             } else {
-                const queryToPreform = query(collection(db, 'products'), limit(24))
+                const queryToPreform = query(collection(db, 'products'), limit(this.limit))
                 const querySnapshot = await getDocs(queryToPreform);
                 this.queryArray = []
                 querySnapshot.forEach((doc) => {
@@ -335,12 +334,12 @@ export default {
             if (this.sortedBy) {
                 if (this.sortedBy.includes("desc")) {
                     let directQ = this.sortedBy.substring(0, this.sortedBy.length - 5)
-                    queryToPreform = query(collection(db, 'products'), ...queryConditions, orderBy(directQ, "desc"), limit(24))
+                    queryToPreform = query(collection(db, 'products'), ...queryConditions, orderBy(directQ, "desc"), limit(this.limit))
                 } else {
-                    queryToPreform = query(collection(db, 'products'), ...queryConditions, orderBy(this.sortedBy),  limit(24))
+                    queryToPreform = query(collection(db, 'products'), ...queryConditions, orderBy(this.sortedBy),  limit(this.limit))
                 }
             } else {
-                queryToPreform = query(collection(db, 'products'), ...queryConditions, limit(24))
+                queryToPreform = query(collection(db, 'products'), ...queryConditions, limit(this.limit))
             }
 
             const fullSize = this.half ? this.size + "5" : this.size;
@@ -361,6 +360,60 @@ export default {
             }
             this.oldQuerry = newQuerry;
             const querySnapshot = await getDocs(queryToPreform);
+            // attempt to reinstantiate the array with documents one at a time
+            this.queryArray = []
+            querySnapshot.forEach((doc) => {
+                this.queryArray.push(doc)
+            });
+
+            this.loading = false;
+        },
+        async shiftQuery(direction) {
+            this.loading = true;
+            this.filters = []
+            const colRef = collection(db, 'products');
+            const lastQuery = this.queryArray[this.queryArray.length - 1];
+            const firstQuery = this.queryArray[0]
+
+            if (this.currentPageNumber == 0 && direction == -1) {
+                return;
+            } else if (direction == 1 && this.queryArray.length < this.limit) {
+                return;
+            }
+            this.currentPageNumber += direction;
+            
+            let queryToPreform;
+            if (this.sortedBy) {
+                if (this.sortedBy.includes("desc")) {
+                    let directQ = this.sortedBy.substring(0, this.sortedBy.length - 5)
+                    if (direction == 1) {
+                        queryToPreform = query(colRef, orderBy(directQ, "desc"), startAfter(lastQuery), limit(this.limit))
+                    } else {
+                        queryToPreform = query(colRef, orderBy(directQ, "desc"), endBefore(firstQuery), limit(this.limit))
+                    }
+                } else {
+                    if (direction == 1) {
+                        queryToPreform = query(colRef, orderBy(this.sortedBy), startAfter(lastQuery), limit(this.limit))
+                    } else {
+                        queryToPreform = query(colRef, orderBy(this.sortedBy), endBefore(firstQuery), limit(this.limit))
+                    }
+                }
+            } else {
+                if (direction == 1) {
+                    queryToPreform = query(collection(db, 'products'), startAfter(lastQuery), limit(this.limit))
+                } else {
+                    queryToPreform = query(collection(db, 'products'), endBefore(firstQuery), limit(this.limit))
+                }
+            }
+
+            const querySnapshot = await getDocs(queryToPreform).then((result) => {
+                if (window.innerWidth > 800) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    window.scrollTo({ top: 500, behavior: 'smooth' });
+                }
+                return result;
+            });
             // attempt to reinstantiate the array with documents one at a time
             this.queryArray = []
             querySnapshot.forEach((doc) => {
@@ -491,7 +544,7 @@ export default {
             font-size: 0.75rem;
             font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
             @media (max-width: 500px) {
-                font-size: 0.5rem;
+                font-size: 0.67rem;
             }
         }
     }
@@ -510,7 +563,8 @@ export default {
             gap: 30px;
             margin: 0 0px 10px 15px;
             min-width: 275px;
-            position: relative;
+            position: sticky;
+            top: 80px;
             background-color: #ebebeb;
             box-shadow: 0.25px 0.25px 3.5px #ababab;
             height: min-content;
@@ -518,6 +572,8 @@ export default {
 
 
             @media(max-width: 800px) {
+                position: relative;
+                top: unset;
                 gap: 15px;
                 min-width: unset;
                 min-height: unset;
@@ -766,17 +822,8 @@ export default {
             flex-direction: column;
             flex-basis: 100%;
             min-height: 800px;
+            justify-content: space-between;
         }
-    }
-
-    .pagination {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-left: 300px;
-        height: 150px;
-        background-color: rgba(0,0,0,0.6);
-        margin-bottom: 20px;
     }
 }
 

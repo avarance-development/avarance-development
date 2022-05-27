@@ -1,7 +1,7 @@
 <template>
   <section class="container">
     <transition name="none" mode="out-in">
-      <transition-group tag="section" class="grid" appear name="fade" v-if="queryArray.length > 0">
+      <transition-group tag="section" class="grid" appear name="fade" v-if="queryArray.length > 0 && loading == false">
         <FadeSquare :doc="doc.data()" v-for="doc in queryArray" :key="doc.data().itemID" />
       </transition-group>
       <div v-else-if="loading" class="loading">
@@ -11,21 +11,50 @@
       </div>
       <p v-else>No items match your filtered results!</p>
     </transition>
+    <div class="pagination">
+        <div class="prev button" @click='shiftQuery(-1)' v-show="!(currentPageNumber == 0)">
+            <RightArrow class="arrow left"/>
+            <h1>Prev</h1>
+        </div>
+        <h1 class="text">Current Page: {{ this.currentPageNumber }}</h1>
+        <div class="next button" @click='shiftQuery(1)' v-show="!(queryArray.length < this.$store.state.limit)">
+            <h1>Next</h1>
+            <RightArrow class="arrow right"/>
+        </div>
+    </div>
   </section>
 </template>
 
 <script>
 import FadeSquare from '../components/FadeSquare.vue'
+import RightArrow from '../assets/Icons/rightarrow.svg'
+
 export default {
     name: "ProductGrid",
     components: {
         FadeSquare,
+        RightArrow,
     },
-    props: ["queryArray", "loading"],
+    props: {
+        queryArray: Array, 
+        loading: Boolean, 
+        currentPageNumber: {
+            type: Number,
+            default: 0
+        }
+    },
+    methods: {
+        shiftQuery(direction) {
+            this.$emit("shift-query", direction);
+        }
+    }
 }
 </script>
 
 <style lang="scss" scoped>
+* {
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
 .container {
     margin: 0 20px;
 
@@ -87,6 +116,47 @@ export default {
             border-top-color: #000;
             border-bottom-color: #000;
             animation: circle-loading 900ms ease-in-out infinite;
+        }
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100px;
+        background-color: rgba(0,0,0,0.6);
+        margin-bottom: 20px;
+        gap: 5px;
+        .button {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            
+            .left {
+                transform: rotate(180deg);
+                bottom: 2.5px;
+            }
+    
+            .right {
+                top: 5.5px;
+            }
+    
+            .arrow {
+                position: relative;
+                width: 32px;
+                height: 32px;
+            }
+        }
+        
+        h1 {
+            user-select: none;
+        }
+
+        .text {
+            margin: 0 30px;
         }
     }
 }

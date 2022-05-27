@@ -4,7 +4,12 @@
     <img class="second" :src="doc.itemPictures[1]" alt="Hover Photo" />
     <h6 class="metal-description">{{  doc.metalMaterial  }}</h6>
     <h2 class="product-title">{{  doc.itemName  }}</h2>
-    <h3 class="product-price">${{  doc.itemPrice.toFixed(2)  }}</h3>
+    <h6 v-if="doc.itemDiscount != 0" class="product-price discount">%{{ (doc.itemDiscount * 100).toFixed(0) }} Off</h6>
+    <div class="price-container">
+      <h6 v-if="doc.itemPrice != doc.itemOriginalPrice" class="product-price original">${{ doc.itemOriginalPrice.toFixed(2) }}</h6>
+      <h6 v-if="doc.itemPrice != doc.itemOriginalPrice" class="product-price original">-></h6>
+      <h3 class="product-price">${{  doc.itemPrice.toFixed(2)  }}</h3>
+    </div>
   </router-link>
 </template>
 
@@ -21,7 +26,7 @@ export default {
 }
 
 .nav-link {
-  width: fit-content;
+  width: 100%;
   height: fit-content;
   position: relative;
   text-decoration: none;
@@ -59,15 +64,32 @@ export default {
 
   .product-title {
     display: inline-block;
-    margin: 2px 20px;
+    margin: 0 20px;
     font-size: 1.5rem;
     overflow-wrap: break-word;
   }
 
-  .product-price {
-    color: #888888;
-    font-size: 1rem;
+  .price-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 5px;
     margin-bottom: 10px;
+
+    .product-price {
+      color: #888888;
+      font-size: 1rem;
+    }
+
+    .original {
+      color: #800000;
+      text-decoration: line-through;
+    }
+
+  }
+  .discount {
+    font-size: 1rem;
+    color: #800000;
   }
 }
 </style>

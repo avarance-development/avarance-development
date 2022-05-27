@@ -1,5 +1,5 @@
 <template>
-  <header :class="{'scrolled-nav': scrolledNav}" >
+  <header :class="{'scrolled-nav': scrolledNav}" id="navigation-header">
       <nav>
           <div class="branding">
             <router-link class="link" :to="{ name: 'Home' }">
@@ -32,9 +32,9 @@
             <router-link v-if="!user" class="profile-link" :to="{ name: 'Login' }">
                 <Login class="icon" :to="{ name: 'Login'}" />
             </router-link>
-            <div v-else class="profile-link">
+            <div v-else class="profile-link" id="profile-link">
                 <LoggedIn @click="toggleProfileView" class="icon"/>
-                <div v-show="profileView" class="profile-popup" :class="{'shift': scrolledNav}">
+                <div v-show="profileView" id="profile-popup" class="profile-popup" :class="{'shift': scrolledNav}">
                     <p>{{this.$store.state.profileFirstName}} {{this.$store.state.profileLastName}}</p>
                     <p class="username">{{this.$store.state.profileUsername}}</p>
                     <router-link v-if="admin" class='admin-link' :to="{ name: 'Admin' }">
@@ -49,10 +49,10 @@
                         <Saved class="svg-icon"/>
                         <p>Saved Items</p>
                     </router-link>
-                    <div class="admin-link" @click="signOut">
+                    <router-link class="admin-link" @click="signOut" :to="{ name: 'Home' }">
                         <Exit class="svg-icon"/>
                         <p>Sign Out</p>
-                    </div>
+                    </router-link>
                 </div>
             </div>
             <Cart @click="toggleCartNav" class="icon"/>
@@ -93,12 +93,20 @@
                 <h1>Your Cart: ({{  this.$store.state.cart.length  }})</h1>
                 <Close @click="toggleCartNav" class="icon" :class="{'icon-active' : cartNav }"/>
               </div>
-              <li v-for="(product, index) in this.$store.state.cart" :key="product.itemID" class="cart-item">
-                <img class="cart-img" :src="product.itemPictures[index]">
-                <h1 class="cart-itemName">{{ product.itemName }}</h1>
+              <li v-for="(product, index) in this.$store.state.cart" :key="product.uniqueID" class="cart-item">
+                <router-link class="cart-link" :to="{ name: 'ViewProduct', params: { category: product.category, productId: product.itemID }}">
+                    <img class="cart-img" :src="product.itemPicture">
+                    <h1 class="cart-itemName">{{ product.itemName }}</h1>
+                </router-link>
                 <h3 class="cart-metalMat">{{ product.metalMaterial }}</h3>
-                <h6 class="cart-price">{{ product.itemPrice }}[TEMP CALC AFTER DISCOUNT]</h6>
-                <h6 class="cart-size-quant">Size: [TO BE INSTANTIATED], Quantity: [TO BE INSTANTIATED]</h6>
+                <h6 v-if="product.itemDiscount != 0" class="cart-price discount">%{{ (product.itemDiscount * 100).toFixed(0) }} Off</h6>
+                <div class="price-container">
+                    <h6 v-if="product.itemPrice != product.itemOriginalPrice" class="cart-price original">${{ product.itemOriginalPrice.toFixed(2) }}</h6>
+                    <h6 v-if="product.itemPrice != product.itemOriginalPrice" class="cart-price original">-></h6>
+                    <h6 class="cart-price">${{ product.itemPrice.toFixed(2) }} </h6>
+                </div>
+                <h6 class="cart-size-quant">Size: {{ product.itemSize}}, Quantity: {{ product.itemQuantity }}</h6>
+                <Close @click="removeCartItem(index)" class="cross"/>
               </li>
             </ul>
           </transition>
@@ -121,6 +129,7 @@ import { signOut } from "firebase/auth"
 import { auth } from "../firebase/firebaseInit.js"
 
 export default {
+    // NEED TO MAKE THE OVERLAY ON ITEMS THAT AREN'T IN STOCK
     name: "Navigation",
     data() {
         return {
@@ -148,6 +157,12 @@ export default {
     },
     mounted() {
         window.addEventListener('scroll', this.updateScroll);
+        document.addEventListener('mouseup', (e) => {
+            const profileLink = document.getElementById('profile-link');
+            if (!profileLink.contains(e.target)) {
+                this.profileView = false;
+            }
+        })
         this.updateScroll();
     },
     computed: {
@@ -188,7 +203,10 @@ export default {
         signOut() {
             signOut(auth);
             window.location.reload();
-        }
+        },
+        removeCartItem(index) {
+            this.$store.commit("removeCartItem", index);
+        },
     }
 }
 </script>
@@ -233,6 +251,9 @@ header {
                 width: 100%;
                 background-color: #800000;
                 min-height: 100px;
+                position: sticky;
+                top: 0;
+                z-index: 10;
                 
                 img {
                     position: relative;
@@ -361,6 +382,9 @@ header {
         .right-nav {
             right: 0;
             max-width: 300px;
+            overflow-y: auto;
+            scroll-snap-type: y proximity;
+            overscroll-behavior: contain;
 
             .side-bar-header {
                 background-color: #303030;
@@ -406,17 +430,28 @@ header {
             }
 
             .cart-item {
+                position: relative;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
                 padding: 0;
                 max-width: 300px;
+                width: 100%;
                 margin-bottom: 20px;
+                transition: transform 0.25s ease;
+                overflow: visible;
+                scroll-snap-align: start;
+                scroll-margin-top: 100px;
+
+                .cart-link {
+                    text-decoration: none;
+                }
                 
                 .cart-img {
                     height: 200px;
                     width: 200px;
+                    margin-bottom: 5px;
                 }
                 
                 .cart-itemName {
@@ -435,27 +470,72 @@ header {
                     margin: 0 40px;
                 }
 
-                .cart-price {
-                    color: #888888;
-                    white-space: pre-wrap;
-                    font-size: 0.875rem;
-                    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-                    margin: 0 40px;
+                div.price-container {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    gap: 5px;
+                    
+                    .cart-price {
+                        color: #000;
+                        white-space: pre-wrap;
+                        font-size: 0.875rem;
+                        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+                    }
+
+                    .original {
+                        color: #800000;
+                        text-decoration: line-through;
+                    }
                 }
+
+                .discount {
+                    font-size: 0.875rem; 
+                    color: #800000;
+                }
+
                 
                 .cart-size-quant {
                     color: #000;
                     white-space: pre-wrap;
-                    font-size: 0.67rem;
+                    font-size: 0.75rem;
                     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
                     margin: 0 40px;
                 }
+
+                .cross {
+                    position: absolute;
+                    top: 0;
+                    right: 4px;
+                    fill: #800000;
+                    width: 32px;
+                    height: 32px;
+                    cursor: pointer;
+                }
             }
+        }
+
+        .right-nav::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .right-nav::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .right-nav::-webkit-scrollbar-thumb {
+            background: #888; 
+            border-radius: 2.5px;
+        }
+
+        .right-nav::-webkit-scrollbar-thumb:hover {
+            background: #555; 
         }
 
         .left-nav {
             left: 0;
             max-width: 250px;
+            z-index: 20;
         }
         
         .dropdown-nav {
