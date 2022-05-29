@@ -51,19 +51,27 @@ const routes = [
     }
   },
   {
-    path: '/shop/:category',
-    name: 'Shop',
-    component: Shop,
-    meta: {
-      title: "Shop",
-    }
-  },
-  {
     path: '/admin',
     name: 'Admin',
     component: () => import('../views/Admin.vue'),
     meta: {
       title: "Admin",
+    }
+  },
+  {
+    path: '/saved',
+    name: 'SavedItems',
+    component: () => import('../views/SavedItems.vue'),
+    meta: {
+      title: "Saved Items"
+    }
+  },
+  {
+    path: '/shop/:category',
+    name: 'Shop',
+    component: Shop,
+    meta: {
+      title: "Shop",
     }
   },
   {

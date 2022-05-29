@@ -123,10 +123,12 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100px;
-        background-color: rgba(0,0,0,0.6);
+        height: 50px;
         margin-bottom: 20px;
         gap: 5px;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+
         .button {
             display: flex;
             flex-direction: row;
@@ -137,17 +139,21 @@ export default {
             
             .left {
                 transform: rotate(180deg);
-                bottom: 2.5px;
+                bottom: 0;
+                padding: 2px 0 0 3px;
             }
     
             .right {
-                top: 5.5px;
+                top: 1.5px;
+                padding: 2px 0 0 4px;
             }
     
             .arrow {
                 position: relative;
                 width: 32px;
                 height: 32px;
+                border: 1px solid black;
+                border-radius: 50%;
             }
         }
         

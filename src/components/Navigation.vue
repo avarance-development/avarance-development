@@ -45,7 +45,7 @@
                         <Admin class="svg-icon"/>
                         <p>Create Product</p>
                     </router-link>
-                    <router-link class="admin-link" :to="{ name: 'Home' }">
+                    <router-link class="admin-link" :to="{ name: 'SavedItems' }">
                         <Saved class="svg-icon"/>
                         <p>Saved Items</p>
                     </router-link>

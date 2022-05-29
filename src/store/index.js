@@ -19,6 +19,7 @@ export default new Vuex.Store({
     currentItem: null,
     message: "",
     limit: 12,
+    starredItems: [],
   },
   mutations: {
     updateUser(state, payload) {
@@ -57,6 +58,12 @@ export default new Vuex.Store({
     },
     removeCartItem(state, payload) {
       state.cart.splice(payload, 1);
+    },
+    addItemToStarred(state, payload) {
+      state.starredItems.push(payload);
+    },
+    removeItemFromStarred(state, payload) {
+      state.starredItems.splice(payload, 1);
     }
   },
   actions: {

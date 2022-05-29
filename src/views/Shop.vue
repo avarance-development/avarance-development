@@ -524,7 +524,8 @@ export default {
                 color: #606060;
                 white-space: nowrap;
                 font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-                
+                text-decoration: line-through;
+
                 @media (max-width: 500px) {
                     font-size: 0.75rem;
                 }

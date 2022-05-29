@@ -34,7 +34,10 @@
         </div>
       </div>
       <div class="item-info-container">
-        <h1 class="info-title">{{ title }}</h1>
+        <div class="title-star">
+          <h1 class="info-title">{{ title }}</h1>
+          <Star v-if="this.$store.state.user" @click="toggleStarred" class="icon" :class="{ starred: this.starred }"/>
+        </div>
         <p class="info-metal">{{ metal }}</p>
         <h3 class="info-price">Price for All Sizes: ${{ price.toFixed(2) }}</h3>
         <p class="info">Part of our {{ currentCategory.substr(0, currentCategory.length - 1) }} Collection, made out of {{ metal }}, 
@@ -76,9 +79,10 @@
 </template>
 
 <script>
-import { db } from "../firebase/firebaseInit.js"
+import { db } from "../firebase/firebaseInit.js";
 import { doc, getDoc } from "firebase/firestore";
-import Loading from "../components/Loading.vue"
+import Loading from "../components/Loading.vue";
+import Star from "../assets/Icons/star.svg";
 
 export default {
   name: "ViewProduct",
@@ -96,6 +100,7 @@ export default {
         sliderIndex: 0,
         quantity: 0,
         addedToCart: "",
+        starred: false,
       }
   },
   props: ["item", "category", "productId"],
@@ -111,6 +116,7 @@ export default {
   },
   components: {
     Loading,
+    Star,
   },
   async created() {
     this.loading = true;
@@ -143,15 +149,25 @@ export default {
       this.metal = this.$store.state.currentItem.metalMaterial;
       console.log("through firebase")
     }
+
+    let original = this.$store.state.starredItems.find((value, index, array) => {
+      return value.itemID == this.$store.state.currentItem.itemID;
+    })
+
+    if (original) {
+      this.starred = true;
+    } else {
+      this.starred = false;
+    }
     this.loading = false;
   },
   methods: {
     nextPicture(direction) {
-      const newVal = (this.activeIndex + direction)
+      const newVal = (this.activeIndex + direction);
       this.activeIndex = this.modMath(newVal, this.picArray.length);
     },
     setActivePicture(index) {
-      this.activeIndex = index
+      this.activeIndex = index;
     },
     resetQuantity() {
       this.quantity = 0;
@@ -239,6 +255,14 @@ export default {
     },
     range(size, startAt = 0) {
       return [...Array(size).keys()].map(i => i/2 + startAt);
+    },
+    toggleStarred() {
+      this.starred = !this.starred;
+      if (this.starred) {
+        this.$store.commit("addItemToStarred", this.$store.state.currentItem);
+      } else {
+        this.$store.commit("removeItemFromStarred", this.$store.state.currentItem);
+      }
     }
   },
 }
@@ -299,7 +323,8 @@ export default {
       .arrow {
         color: #606060;
         white-space: nowrap;
-              
+        text-decoration: line-through;
+        
         @media (max-width: 500px) {
           font-size: 0.75rem;
         }
@@ -424,8 +449,27 @@ export default {
     .item-info-container {
       flex-basis: 50%;
 
-      .info-title {
-        position: relative;
+      .title-star {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 2px;
+
+        .icon {
+          width: 40px;
+          height: 40px;
+          cursor: pointer;
+          transition: fill 0.35s ease;
+          fill: #fff;
+        }
+
+        .starred {
+          fill: gold;
+        }
+
+        .info-title {
+          position: relative;
+        }
       }
       
       .info-metal {
