@@ -1,5 +1,6 @@
 <template>
   <header :class="{'scrolled-nav': scrolledNav}" id="navigation-header">
+      <Loading v-show="loading"/>
       <nav>
           <div class="branding">
             <router-link class="link" :to="{ name: 'Home' }">
@@ -49,10 +50,10 @@
                         <Saved class="svg-icon"/>
                         <p>Saved Items</p>
                     </router-link>
-                    <router-link class="admin-link" @click="signOut" :to="{ name: 'Home' }">
+                    <div class="admin-link" @click="signOut">
                         <Exit class="svg-icon"/>
                         <p>Sign Out</p>
-                    </router-link>
+                    </div>
                 </div>
             </div>
             <Cart @click="toggleCartNav" class="icon"/>
@@ -108,6 +109,9 @@
                 <h6 class="cart-size-quant">Size: {{ product.itemSize}}, Quantity: {{ product.itemQuantity }}</h6>
                 <Close @click="removeCartItem(index)" class="cross"/>
               </li>
+              <button class="checkout" @click="checkout">
+                Checkout
+              </button>
             </ul>
           </transition>
           <div v-show="cartNav" @click="toggleCartNav" class="cart-overlay"></div>
@@ -127,6 +131,7 @@ import Admin from "../assets/Icons/admin.svg"
 import Close from "../assets/Icons/cross.svg"
 import { signOut } from "firebase/auth"
 import { auth } from "../firebase/firebaseInit.js"
+import Loading from "../components/Loading.vue"
 
 export default {
     // NEED TO MAKE THE OVERLAY ON ITEMS THAT AREN'T IN STOCK
@@ -139,6 +144,7 @@ export default {
             windowWidth: null,
             profileView: null,
             cartNav: null,
+            loading: false,
         }
     },
     components: {
@@ -150,6 +156,7 @@ export default {
         Saved,
         Admin,
         Close,
+        Loading,
     },
     created() {
         window.addEventListener('resize', this.checkScreen);
@@ -157,6 +164,11 @@ export default {
     },
     mounted() {
         window.addEventListener('scroll', this.updateScroll);
+
+        let user = auth.currentUser;
+        if (!user) {
+            return;
+        }
         document.addEventListener('mouseup', (e) => {
             const profileLink = document.getElementById('profile-link');
             if (!profileLink.contains(e.target)) {
@@ -201,11 +213,18 @@ export default {
             }
         },
         signOut() {
+            console.log("WHAT")
             signOut(auth);
             window.location.reload();
         },
         removeCartItem(index) {
             this.$store.commit("removeCartItem", index);
+        },
+        checkout() {
+            if (this.$store.state.cart.length > 0) {
+                this.loading = true;
+                this.$store.dispatch('checkout');
+            }
         },
     }
 }
@@ -512,6 +531,17 @@ header {
                     height: 32px;
                     cursor: pointer;
                 }
+            }
+
+            .checkout {
+                position: relative;
+                left: calc((100% - 45%)/2);
+                width: 45%;
+                min-height: 45px;
+                color: #fff;          
+                cursor: pointer;
+                background-color: #111111;
+                margin-bottom: 25px;
             }
         }
 

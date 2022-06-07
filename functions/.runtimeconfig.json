@@ -1,0 +1,10 @@
+{
+  "stripe": {
+    "secret_key": "sk_test_51L4FhgBwBXl7BBnbSkNWvTbvUnse1aGIKBmzZU94KJ1uDoRcsqFsopY802zkEWmA8RPplqSv7dqobvp2GRuyms1500AN9gomml",
+    "payments_webhook_secret": "whsec_s0nHZn7I82qwtYvehzTmNFI4HcShAUEC"
+  },
+  "sendgrid": {
+    "template_id": "d-14d97edd551b420cbfdf30aee27fa50a",
+    "api_key": "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"
+  }
+}

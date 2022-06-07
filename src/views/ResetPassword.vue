@@ -3,16 +3,16 @@
       <Modal :modalMessage="error" v-show="modalActive" @close-modal="closeModal"/>
       <Loading v-show="loading"/>
       <form @submit.prevent="resetPassword" class="form-wrapper">
-          <div class="register-text">
+        <div class="register-text">
             <p>Remembered your Password?</p>
             <router-link :to="{ name: 'Login' }">Login</router-link>
-          </div>
-          <h1 class='title'>Reset Your Password</h1>
-          <div class="input-wrapper">
+        </div>
+        <h1 class='title'>Reset Your Password</h1>
+        <div class="input-wrapper">
             <Email class='icon'/>
             <input placeholder="Email" v-model="email" class='input' type="email" name="email" id="email" required="required">
-          </div>
-          <button class='btn' type="submit">Reset</button>
+        </div>
+        <button class='btn' type="submit">Reset</button>
       </form>
   </section>
 </template>
@@ -51,18 +51,6 @@ export default {
                 this.loading = false
                 this.modalActive = true
             })
-
-            // this.loading = true
-            // firebase.auth().sendPasswordResetEmail(this.email).then(() => {
-            //     this.error = "If your account exists, you will receive an email"
-            //     this.loading = false
-            //     this.modalActive = true
-            // }).catch(err => {
-            //     this.error = err.message
-            //     this.loading = false
-            //     this.modalActive = true
-            // })
-
         },
         closeModal() {
             this.modalActive = !this.modalActive

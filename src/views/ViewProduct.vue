@@ -63,7 +63,7 @@
           <button class="add-to-cart" @click="addToCart">
             Add to Cart
           </button>
-          <button class="checkout">
+          <button class="checkout" @click="checkout">
             Checkout
           </button>
         </div>
@@ -150,6 +150,9 @@ export default {
       console.log("through firebase")
     }
 
+    this.picArray.push(`/img/${this.$route.params.category}.jpg`)
+    this.picArray = this.picArray.filter((imgSrc, index) => this.picArray.indexOf(imgSrc) == index)
+
     let original = this.$store.state.starredItems.find((value, index, array) => {
       return value.itemID == this.$store.state.currentItem.itemID;
     })
@@ -160,6 +163,26 @@ export default {
       this.starred = false;
     }
     this.loading = false;
+  },
+  async beforeRouteUpdate(to, from, next) {
+    // For our navigation in the cart from an item to the next
+    this.loading = true;
+    if (to.params.productId != from.params.productId) {
+      const docRef = doc(db, 'products', to.params.productId);
+      const currentDoc = await getDoc(docRef);
+      this.$store.commit("setCurrentItem", currentDoc.data())
+      this.title = this.$store.state.currentItem.itemName;
+      this.picArray = this.$store.state.currentItem.itemPictures;
+      this.sizeMapBool = this.$store.state.currentItem.sizesBool;
+      this.itemSizes = this.$store.state.currentItem.itemSizes;
+      this.price = this.$store.state.currentItem.itemPrice;
+      this.metal = this.$store.state.currentItem.metalMaterial;
+      console.log("through firebase")
+    }
+    this.picArray.push(`/img/${this.$route.params.category}.jpg`)
+    this.picArray = this.picArray.filter((imgSrc, index) => this.picArray.indexOf(imgSrc) == index)
+    this.loading = false;
+    next();
   },
   methods: {
     nextPicture(direction) {
@@ -263,7 +286,13 @@ export default {
       } else {
         this.$store.commit("removeItemFromStarred", this.$store.state.currentItem);
       }
-    }
+    },
+    checkout() {
+      if (this.$store.state.cart.length > 0) {
+        this.loading = true;
+        this.$store.dispatch('checkout');
+      }
+    },
   },
 }
 </script>

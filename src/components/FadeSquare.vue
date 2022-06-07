@@ -2,6 +2,7 @@
   <router-link class="nav-link" :to="{ name: 'ViewProduct', params: { category: doc.itemType, productId: doc.itemID, item: doc } }">
     <img class="first" :src="doc.itemPictures[0]" alt="Cover Photo" />
     <img class="second" :src="doc.itemPictures[1]" alt="Hover Photo" />
+    <img v-if="doc.itemTotalQuantity == 0" class="second stock" src="../assets/OutofStock.png" alt="Out of Stock">
     <h6 class="metal-description">{{  doc.metalMaterial  }}</h6>
     <h2 class="product-title">{{  doc.itemName  }}</h2>
     <h6 v-if="doc.itemDiscount != 0" class="product-price discount">%{{ (doc.itemDiscount * 100).toFixed(0) }} Off</h6>
@@ -55,6 +56,12 @@ export default {
   }
   .second:hover {
     opacity: 1;
+  }
+
+  .stock {
+    opacity: 1;
+    pointer-events: none;
+    z-index: 10;
   }
 
   .metal-description {

@@ -7,6 +7,8 @@ import ResetPassword from '../views/ResetPassword.vue'
 import Shop from '../views/Shop.vue'
 import Error404 from '../views/Error404.vue'
 
+import { auth } from "../firebase/firebaseInit.js"
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -56,6 +58,8 @@ const routes = [
     component: () => import('../views/Admin.vue'),
     meta: {
       title: "Admin",
+      requiresAuth: true,
+      requiresAdmin: true,
     }
   },
   {
@@ -63,7 +67,8 @@ const routes = [
     name: 'SavedItems',
     component: () => import('../views/SavedItems.vue'),
     meta: {
-      title: "Saved Items"
+      title: "Saved Items",
+      requiresAuth: true,
     }
   },
   {
@@ -80,6 +85,8 @@ const routes = [
     component: () => import('../views/CreateProduct.vue'),
     meta: {
       title: "Create Product",
+      requiresAuth: true,
+      requiresAdmin: true,
     }
   },
   {
@@ -89,6 +96,14 @@ const routes = [
     props: true,
     meta: {
       title: "View Product",
+    }
+  },
+  {
+    path: '/success',
+    name: 'Success',
+    component: () => import('../views/Success.vue'),
+    meta: {
+      title: "Success!"
     }
   },
   {
@@ -113,6 +128,30 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   document.title = `${to.meta.title} | Avarance`;
   next();
+})
+
+router.beforeEach(async (to, from, next) => {
+  let user = auth.currentUser;
+  let admin = null;
+  if (user) {
+    let token = await user.getIdTokenResult();
+    admin = token.claims.admin;
+  }
+
+  if (to.matched.some((res) => res.meta.requiresAuth)) {
+    if (user) {
+      if (to.matched.some((res) => res.meta.requiresAdmin)) {
+        if (admin) {
+          return next();
+        }
+        return next({ name: "Home" });
+      }
+      return next();
+    }
+    return next({ name: "Home" });
+  }
+  return next();
+  
 })
 
 export default router

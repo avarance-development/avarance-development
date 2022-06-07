@@ -1,9 +1,9 @@
 import {  initializeApp  } from "firebase/app";
-import { getFirestore, serverTimestamp } from "firebase/firestore";
+import { getFirestore, serverTimestamp, connectFirestoreEmulator } from "firebase/firestore";
 import { getAuth  } from "firebase/auth"
-import { getFunctions } from "firebase/functions"
+import { getFunctions, connectFunctionsEmulator } from "firebase/functions"
 
-const firebaseConfig = {
+let firebaseConfig = {
     apiKey: "AIzaSyDDCEiGzmIwvpEPo25KvDPAMHYVOzV4uqE",
     authDomain: "avarance-development.firebaseapp.com",
     projectId: "avarance-development",
@@ -13,11 +13,18 @@ const firebaseConfig = {
     measurementId: "G-SP1RZHX8T7"
 };
 
-const firebaseApp = initializeApp(firebaseConfig);
+
+
+const firebaseApp = !app.length ? initializeApp(firebaseConfig) : apps[0];
 const timestamp = serverTimestamp();
 const db = getFirestore(firebaseApp)
 const auth = getAuth(firebaseApp)
 const functions = getFunctions(firebaseApp);
 // const analytics = getAnalytics(firebaseApp);
 
+// if(location.hostname == "localhost") {
+//     firebaseConfig.databaseURL = 'http://localhost:8050?ns=emulatorui'
+//     connectFirestoreEmulator(db, 'localhost', 8050)
+//     connectFunctionsEmulator(functions, 'localhost', 5001)
+// }
 export { timestamp, db, auth, functions };
