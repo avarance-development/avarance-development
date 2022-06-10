@@ -44,18 +44,25 @@
             </transition-group>
             <p class="error" v-else>You have no items saved so far, save some items by clicking the star on their page!</p>
         </transition>
+        <!-- <h1>History</h1>
+        <div class="history-items" v-for="(item, index) in paymentHistory" :key='index'>
+
+        </div> -->
     </div>
 </template>
 
 <script>
 import Star from "../assets/Icons/star.svg"
+// History is yet to be instantiated until a reliable way to attach orders to users (getting the userID in a request function)
+// import { doc, getDoc, collection } from "firebase/firestore"
+// import { db } from "../firebase/firebaseInit.js"
 
 export default {
     name: 'SavedItems',
     data() {
-       return {
-
-       }
+        return {
+            // paymentHistory: null,
+        }
     },
     components: {
        Star
@@ -72,7 +79,10 @@ export default {
             const lastword = this.$route.params.category.split(' ').pop().toLowerCase();
             return lastword;
         }
-    }
+    },
+    // created() {
+    //     paymentHistory
+    // }
 }
 </script>
 

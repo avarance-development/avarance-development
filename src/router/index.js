@@ -6,6 +6,7 @@ import Register from '../views/Register.vue'
 import ResetPassword from '../views/ResetPassword.vue'
 import Shop from '../views/Shop.vue'
 import Error404 from '../views/Error404.vue'
+import Contact from "../views/Contact.vue"
 
 import { auth } from "../firebase/firebaseInit.js"
 
@@ -53,6 +54,14 @@ const routes = [
     }
   },
   {
+    path: '/contact',
+    name: 'Contact',
+    component: Contact,
+    meta: {
+      title: "Contact",
+    }
+  },
+  {
     path: '/admin',
     name: 'Admin',
     component: () => import('../views/Admin.vue'),
@@ -90,20 +99,20 @@ const routes = [
     }
   },
   {
+    path: '/success/:sessionID',
+    name: 'Success',
+    component: () => import('../views/Success.vue'),
+    meta: {
+      title: "Success!"
+    }
+  },
+  {
     path: '/:category/:productId',
     name: 'ViewProduct',
     component: () => import('../views/ViewProduct.vue'),
     props: true,
     meta: {
       title: "View Product",
-    }
-  },
-  {
-    path: '/success',
-    name: 'Success',
-    component: () => import('../views/Success.vue'),
-    meta: {
-      title: "Success!"
     }
   },
   {

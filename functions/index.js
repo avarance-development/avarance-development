@@ -7,6 +7,7 @@ admin.initializeApp();
 const db = admin.firestore();
 const SEND_GRID_API_KEY = functions.config().sendgrid.api_key;
 const TEMPLATE_ID = functions.config().sendgrid.template_id;
+const RECEIPT_TEMPLATE_ID = functions.config().sendgrid.receipt_template_id;
 sgMail.setApiKey(SEND_GRID_API_KEY);
 
 
@@ -26,31 +27,47 @@ exports.addAdminRole = functions.https.onCall((data, context) => {
     })
 })
 
+exports.retrieveCustomer = functions.https.onCall(async (data, context) => {
+    const stripe = require("stripe")(functions.config().stripe.secret_key);
+    const session = await stripe.checkout.sessions.retrieve(data.id);
+    const customer = await stripe.customers.retrieve(session.customer);
+    return { 
+        city: customer.address.city,
+        country: customer.address.country,
+        state: customer.address.state,
+        email: customer.email,
+        name: customer.name,
+        total: session.amount_total,
+        session: session,
+    }
+})
+
 exports.createStripeCheckout = functions.https.onCall(async (data, context) => {
 
-    // TODO: In the future, try and see if we can get the commented code to work over the code down below
-    // currently, we cannot use doc to get the existing item that we want out of the database for unknown reasons
+    for(const item of data.cart) {
+        const itemFromDB = await db.doc(`products/${item.itemID}`).get()
+        const itemPrice = parseInt(itemFromDB.data().itemPrice * 100);
+        item.unit_amount = itemPrice
+    }
+
+
+    // Older code that is deprecated, the more efficient better way is written up top, the commented
+    // code below is to be deleted as some time later, when we are certain
 
     // for(const item of data.cart) {
-    //     const itemFromDB = await db.collection("products").doc(item.itemID).get()
-    //     const itemPrice = itemFromDB.data().itemPrice * 100;
-    //     item.unit_amount = itemPrice
+    //     const result = await db.collection("products").where("itemID", "==", item.itemID).get();
+    //     // console.log("result", result)
+    //     let itemPrice = 9999;
+    //     result.forEach((doc) => {
+    //         // console.log("parsed int", parseInt(doc.data().itemPrice * 100))
+    //         itemPrice = parseInt(doc.data().itemPrice * 100)   
+    //     })
+    //     // if (itemPrice == 0) {
+    //     //     throw new functions.https.HttpsError('failed-precondition', 'One of the items in your cart does not exist');
+    //     // }
+    //     item.unit_amount = itemPrice;
+    //     // console.log("unit amount", item.unit_amount)
     // }
-
-    for(const item of data.cart) {
-        const result = await db.collection("products").where("itemID", "==", item.itemID).get();
-        // console.log("result", result)
-        let itemPrice = 0;
-        result.forEach((doc) => {
-            // console.log("parsed int", parseInt(doc.data().itemPrice * 100))
-            itemPrice = parseInt(doc.data().itemPrice * 100)   
-        })
-        // if (itemPrice == 0) {
-        //     throw new functions.https.HttpsError('failed-precondition', 'One of the items in your cart does not exist');
-        // }
-        item.unit_amount = itemPrice;
-        // console.log("unit amount", item.unit_amount)
-    }
 
 
     const itemsToBuy = data.cart.map((item) => {
@@ -75,7 +92,7 @@ exports.createStripeCheckout = functions.https.onCall(async (data, context) => {
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         mode: "payment",
-        success_url: "http://localhost:8080/success",
+        success_url: "http://localhost:8080/success/{CHECKOUT_SESSION_ID}",
         cancel_url: "http://localhost:8080/",
         shipping_address_collection: {
             allowed_countries: ['US'],
@@ -89,7 +106,7 @@ exports.createStripeCheckout = functions.https.onCall(async (data, context) => {
                         currency: 'usd',
                     },
                     display_name: 'Standard Shipping',
-                    // Delivers between 7-14 business days
+                    // Delivery between 7-14 business days
                     delivery_estimate: {
                         minimum: {
                         unit: 'business_day',
@@ -108,6 +125,9 @@ exports.createStripeCheckout = functions.https.onCall(async (data, context) => {
         automatic_tax: {
             enabled: true
         },
+        metadata: {
+            paymentID: data.paymentID
+        },
         // Set to expire in an hour
         expires_at: Math.floor(Date.now() / 1000) + (3600 * 1),
     });
@@ -117,8 +137,18 @@ exports.createStripeCheckout = functions.https.onCall(async (data, context) => {
     }
 })
 
-// Function has not been debugged and worked through
-exports.emailFeedback = functions.https.onCall(async (data, context)=> {
+exports.expireSession = functions.https.onCall(async (data, context) => {
+    try {
+        const stripe = require("stripe")(functions.config().stripe.secret_key);
+        await stripe.checkout.sessions.expire(data.id);
+    } catch(err) {
+        return { success: false, error: error.message }
+    }
+
+    return {  success: true  }
+})
+
+exports.emailFeedback = functions.https.onCall(async (data, context) => {
 
     if (!context.auth && !context.auth.token.email) {
         throw new functions.https.HttpsError('failed-precondition', 'Must be logged in with an email address');
@@ -147,11 +177,40 @@ exports.emailFeedback = functions.https.onCall(async (data, context)=> {
     return { success: true  };
 })
 
+exports.emailReceipt = functions.https.onCall(async (data, context)=> { 
+
+    const msg = {
+        to: data.email,
+        from: {
+            email: 'avarancedev@gmail.com'
+        },
+        subject: 'Recent Receipt from Avarance',
+        templateId: RECEIPT_TEMPLATE_ID,
+        dynamic_template_data: {
+            name: data.name,
+            email: data.email,
+            sessionId: data.sessionId,
+            date: data.date,
+            total: data.total,
+            cart: data.cart,
+        }
+    }
+    
+    try { 
+        await sgMail.send(msg);
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+
+    return { success: true  };
+})
+
 // Unfinished function
 exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
     console.log("WEBHOOK")
     const stripe = require("stripe")(functions.config().stripe.secret_key);
-    const whSecret = functions.config().payments_webhook_secret;
+    const whSecret = functions.config().stripe.payments_webhook_secret;
+    console.log("SECRET");
     let event;
 
     try {
@@ -161,27 +220,75 @@ exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
             whSecret,
         )
     } catch(err) {
+        console.error("Webhook verification Failed!")
         return res.status(400).send(`Webhook Error: ${err.message}`);
     }
-
+    
     switch (event.type) {
         case 'checkout.session.completed':
             console.log("COMPLETED")
-            //   const session = event.data.object;
-            await admin.firestore().collection("orders").doc().set({
-                checkoutSessionId: dataObject.id,
-                paymentStatus: dataObject.payment_status,
-                shippingInfo: dataObject.shipping,
-                amountTotal: dataObject.amount_total,
+            const session = event.data.object;
+
+            const paymentID = session.metadata.paymentID;
+
+            db.doc(`paymentIntent/${paymentID}`).get().then(async (doc) => {
+                const paymentCart = doc.data().cart;
+                const batch = db.batch();
+                try {
+                    for (const item of paymentCart) {
+    
+                        const docRef = db.doc(`products/${item.itemID}`)
+                        const itemInfo = await docRef.get();
+                        const itemData = itemInfo.data();
+                        const size = ((item.itemSize).toString()).replace('.', '');
+                        const dbQuantity = itemData.itemSizes[size];
+                        const cartQuantity = item.itemQuantity;
+    
+                        if (dbQuantity - cartQuantity < 0) {
+                            throw `${item.itemName}'s quantity has been reduced to ${dbQuantity}`;
+                        } else {
+                        
+                            const sizesRoute = 'itemSizes.' + size;
+                            const newQuant = dbQuantity - cartQuantity;
+                            batch.update(docRef, { [sizesRoute] : newQuant});
+    
+                            if (newQuant == 0) {
+                                const boolRoute = 'sizesBool.' + size;
+                                batch.update(docRef, { [boolRoute] : false });
+                            }
+                            const remainingTotalQuant = itemData.itemTotalQuantity - cartQuantity;
+                            batch.update(docRef, { "itemTotalQuantity" : remainingTotalQuant })
+                            
+                            if (remainingTotalQuant == 0) {
+                                batch.update(docRef, { "itemInStock" : false });
+                            }
+                            const popularityInc = itemData.popularity + cartQuantity;
+                            batch.update(docRef, { "popularity" : popularityInc });
+                        }
+                    }
+                } catch (error) {
+                    console.log(error.message)
+                    return res.status(400).send(`Webhook Error: ${error.message}`);
+                }
+
+                await batch.commit();
+            });
+            
+            await admin.firestore().collection("orders").doc(paymentID).set({
+                checkoutSessionId: session.id,
+                paymentStatus: session.payment_status,
+                shippingInfo: session.shipping,
+                amountTotal: Number((session.amount_total / 100).toFixed(2)),
+                timestamp: db.FieldValue.serverTimestamp(),
             })
+
             break;
         case 'checkout.session.expired':
-            //   const session = event.data.object;
-            // Then define and call a function to handle the event checkout.session.expired
             break;
         default:
-          console.log(`Unhandled event type ${event.type}`);
+            console.log(`Unhandled event type ${event.type}`);
+            break;
     }
 
-    res.status(200)
+    return res.sendStatus(200);
 })

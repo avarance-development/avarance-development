@@ -5,7 +5,7 @@
         <h1 class='title'>{{  title  }}</h1>
         <h3 class='subtitle'>{{ subtitle  }}</h3>
         <input type="text" placeholder="Enter your Name" required="true" v-model="name">
-        <input type="text" placeholder="Enter your email address" required="true" v-model="email">
+        <input type="email" placeholder="Enter your email address" required="true" v-model="email">
         <textarea rows="10" placeholder="Enter your message..." required="true" v-model="msg"></textarea>
         <p class='warning'>*Must be a logged-in user in order to send forms</p>
         <button @click="submitForm">Submit</button>
@@ -50,6 +50,8 @@ export default {
                 } else {
                     this.error = result.data.error
                 }
+            }).catch((error) => {
+                this.error = error.message;
             })
             this.name = "";
             this.email = "";
@@ -110,6 +112,7 @@ export default {
     button {
         margin-top: 10px;
         margin-left: calc(50% - 125px/2);
+        margin-bottom: 25px;
         background-color: #f0f0f0;
         border: 1px solid #999999;
         width: 125px;

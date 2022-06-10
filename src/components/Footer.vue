@@ -40,7 +40,7 @@
         <router-link class="link" :to="{ name: 'Shop', params: { category: 'earrings' }}">
             Earrings
         </router-link>
-        <router-link class="link" :to="{ name: '' }">
+        <router-link class="link" :to="{ name: 'Contact' }">
             Contact
         </router-link>
         <router-link class="link" :to="{ name: '' }">

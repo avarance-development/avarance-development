@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { doc, getDoc, writeBatch } from "firebase/firestore"
+import { doc, getDoc, collection, setDoc } from "firebase/firestore"
 import { auth, db, functions } from "../firebase/firebaseInit.js"
 import { httpsCallable } from "firebase/functions"
 import createPersistedState from "vuex-persistedstate";
@@ -22,6 +22,7 @@ export default new Vuex.Store({
     message: "",
     limit: 12,
     starredItems: [],
+    sessionID: null,
   },
   mutations: {
     updateUser(state, payload) {
@@ -66,6 +67,12 @@ export default new Vuex.Store({
     },
     removeItemFromStarred(state, payload) {
       state.starredItems.splice(payload, 1);
+    },
+    clearCart(state) {
+      state.cart = [];
+    },
+    setSessionID(state, payload) {
+      state.sessionID = payload;
     }
   },
   actions: {
@@ -79,56 +86,41 @@ export default new Vuex.Store({
       commit('setProfileAdmin', admin)
     },
     async checkout({ commit, state}) {
-      // To be uncommented later in order to prevent changes to the db
-      /*
-      const batch = writeBatch(db);
+
+      const newPaymentIntent = collection(db, "paymentIntent")
+      const paymentID  = doc(newPaymentIntent).id
       try {
-        for (const item of state.cart) {
-
-          const docRef = doc(db, 'products', item.itemID);
-          const itemInfo = await getDoc(docRef);
-          const itemData = itemInfo.data()
-          const size = ((item.itemSize).toString()).replace('.', '')
-          const dbQuantity = itemData.itemSizes[size];
-          const cartQuantity = item.itemQuantity;
-
-          if (dbQuantity - cartQuantity < 0) {
-            throw `${item.itemName}'s quantity has been reduced to ${dbQuantity}`;
-          } else {
-            
-            const sizesRoute = 'itemSizes.' + size
-            const newQuant = dbQuantity - cartQuantity;
-            batch.update(docRef, { [sizesRoute] : newQuant});
-
-            if (newQuant == 0) {
-              const boolRoute = 'sizesBool.' + size
-              batch.update(docRef, { [boolRoute] : false });
-            }
-            const remainingTotalQuant = itemData.itemTotalQuantity - cartQuantity;
-            batch.update(docRef, { "itemTotalQuantity" : remainingTotalQuant })
-            
-            if (remainingTotalQuant == 0) {
-              batch.update(docRef, { "itemInStock" : false })
-            }
-            const popularityInc = itemData.popularity + cartQuantity
-            batch.update(docRef, { "popularity" : popularityInc })
-          }
-        }
+        await setDoc(doc(db, "paymentIntent", paymentID), {
+          cart: state.cart
+        })
       } catch (error) {
-        state.message = error.message
-        console.log(error.message)
-        return
+        console.log(error)
       }
 
-      await batch.commit();
-      */
 
-      const createStripeCheckout = await httpsCallable(functions, 'createStripeCheckout');
-      const stripe = Stripe('pk_test_51L4FhgBwBXl7BBnbQXhlhoJX9r1z6wcNhlnGNZMx0xUGAbP5mrFzlMWmlxrxM7GLnzAxjEmc78mgGaYYYkTbhrj100sHoY0ylB');
-      createStripeCheckout({ cart: state.cart }).then((response) => {
-        const sessionId = response.data.id;
-        stripe.redirectToCheckout({ sessionId: sessionId})
-      })
+      if (state.sessionID != null) {
+        const expireSession = await httpsCallable(functions, 'expireSession');
+        const id = state.sessionID
+        expireSession({ id }).then(async (result) => {
+          console.log("session expired")
+          console.log(result)
+          const createStripeCheckout = await httpsCallable(functions, 'createStripeCheckout');
+          const stripe = Stripe('pk_test_51L4FhgBwBXl7BBnbQXhlhoJX9r1z6wcNhlnGNZMx0xUGAbP5mrFzlMWmlxrxM7GLnzAxjEmc78mgGaYYYkTbhrj100sHoY0ylB');
+          createStripeCheckout({ cart: state.cart, paymentID: paymentID }).then((response) => {
+            const sessionId = response.data.id;
+            commit("setSessionID", sessionId);
+            stripe.redirectToCheckout({ sessionId: sessionId})
+          })
+        })
+      } else {
+        const createStripeCheckout = await httpsCallable(functions, 'createStripeCheckout');
+        const stripe = Stripe('pk_test_51L4FhgBwBXl7BBnbQXhlhoJX9r1z6wcNhlnGNZMx0xUGAbP5mrFzlMWmlxrxM7GLnzAxjEmc78mgGaYYYkTbhrj100sHoY0ylB');
+        createStripeCheckout({ cart: state.cart, paymentID: paymentID }).then((response) => {
+          const sessionId = response.data.id;
+          commit("setSessionID", sessionId);
+          stripe.redirectToCheckout({ sessionId: sessionId})
+        })
+      }
     }
   },
   modules: {

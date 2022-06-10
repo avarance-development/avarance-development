@@ -167,7 +167,7 @@ export default {
   async beforeRouteUpdate(to, from, next) {
     // For our navigation in the cart from an item to the next
     this.loading = true;
-    if (to.params.productId != from.params.productId) {
+    if (to.name === 'ViewProduct' && to.params.productId != from.params.productId) {
       const docRef = doc(db, 'products', to.params.productId);
       const currentDoc = await getDoc(docRef);
       this.$store.commit("setCurrentItem", currentDoc.data())
@@ -178,9 +178,9 @@ export default {
       this.price = this.$store.state.currentItem.itemPrice;
       this.metal = this.$store.state.currentItem.metalMaterial;
       console.log("through firebase")
+      this.picArray.push(`/img/${this.$route.params.category}.jpg`)
+      this.picArray = this.picArray.filter((imgSrc, index) => this.picArray.indexOf(imgSrc) == index)
     }
-    this.picArray.push(`/img/${this.$route.params.category}.jpg`)
-    this.picArray = this.picArray.filter((imgSrc, index) => this.picArray.indexOf(imgSrc) == index)
     this.loading = false;
     next();
   },
