@@ -45,18 +45,9 @@ export default {
             signInWithEmailAndPassword(auth, this.email, this.password).then(() => {
                 this.$router.push({ name: "Home" })
                 this.error = ''
-                console.log(auth.currentUser.uid);
             }).catch((err) => {
                 this.error = err.message
             })
-
-            // firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(() => {
-            //     this.$router.push({ name: "Home" })
-            //     this.error = ''
-            //     console.log(firebase.auth().currentUser.uid)
-            // }).catch((err) => {
-            //     this.error = err.message
-            // })
         }
     }
 }

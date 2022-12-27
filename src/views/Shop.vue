@@ -354,7 +354,6 @@ export default {
             };
 
             if (JSON.stringify(this.oldQuerry) === JSON.stringify(newQuerry)) {
-                console.log("SAME QUERRY")
                 this.loading = false;
                 return;
             }
@@ -564,7 +563,6 @@ export default {
             gap: 30px;
             margin: 0 0px 10px 15px;
             min-width: 275px;
-            position: sticky;
             top: 80px;
             background-color: #ebebeb;
             box-shadow: 0.25px 0.25px 3.5px #ababab;

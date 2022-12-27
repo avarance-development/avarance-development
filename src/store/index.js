@@ -37,18 +37,14 @@ export default new Vuex.Store({
     },
     setProfileAdmin(state, payload) {
       state.profileAdmin = payload
-      console.log(payload)
     },
     setCurrentItem(state, payload) {
       state.currentItem = payload
-      console.log("state committing", payload)
     },
     addItemToCart(state, payload) {
       let original = state.cart.find((value, index, array) => {
-        console.log(value)
         return value.uniqueID == payload.uniqueID;
       })
-      console.log(original)
       if (original == null) {
         state.cart.push(payload);
         state.message = "Added to Cart!"
@@ -73,6 +69,9 @@ export default new Vuex.Store({
     },
     setSessionID(state, payload) {
       state.sessionID = payload;
+    },
+    clearSessionID(state) {
+      state.sessionID = null;
     }
   },
   actions: {
@@ -94,7 +93,7 @@ export default new Vuex.Store({
           cart: state.cart
         })
       } catch (error) {
-        console.log(error)
+        //
       }
 
 
@@ -102,8 +101,6 @@ export default new Vuex.Store({
         const expireSession = await httpsCallable(functions, 'expireSession');
         const id = state.sessionID
         expireSession({ id }).then(async (result) => {
-          console.log("session expired")
-          console.log(result)
           const createStripeCheckout = await httpsCallable(functions, 'createStripeCheckout');
           const stripe = Stripe('pk_test_51L4FhgBwBXl7BBnbQXhlhoJX9r1z6wcNhlnGNZMx0xUGAbP5mrFzlMWmlxrxM7GLnzAxjEmc78mgGaYYYkTbhrj100sHoY0ylB');
           createStripeCheckout({ cart: state.cart, paymentID: paymentID }).then((response) => {

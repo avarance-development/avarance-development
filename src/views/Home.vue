@@ -1,5 +1,6 @@
 <template>
   <section class="home">
+    <Hero/>
     <ShopPost :post="post" v-for="(post,index) in shopPostList" :key="index" class="posts"/>
     <router-link id="header" class="header" :to="{ name: 'Shop', params: { category: 'all' }}">
       Shop Our Entire Catalog
@@ -9,14 +10,16 @@
 </template>
 
 <script>
-import ShopPost from '../components/ShopPost.vue'
-import ProductGrid from '../components/ProductGrid.vue'
+import ShopPost from '../components/ShopPost.vue';
+import ProductGrid from '../components/ProductGrid.vue';
+import Hero from '../components/Hero.vue';
 import { query, collection, getDocs, limit, startAfter, endBefore, orderBy } from "firebase/firestore";  
-import { db } from "../firebase/firebaseInit.js"
+import { db } from "../firebase/firebaseInit.js";
 
 export default {
   name: 'Home',
   components: {
+    Hero,
     ShopPost,
     ProductGrid
   },
@@ -110,6 +113,7 @@ export default {
   display: flex;
   flex-direction: column;
   box-shadow: 2px 0 6px 1px rgba(0, 0, 0, 0.4);
+  overflow-x: hidden;
   
   .posts {
     order: 1;

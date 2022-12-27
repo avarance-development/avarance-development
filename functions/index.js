@@ -50,26 +50,6 @@ exports.createStripeCheckout = functions.https.onCall(async (data, context) => {
         item.unit_amount = itemPrice
     }
 
-
-    // Older code that is deprecated, the more efficient better way is written up top, the commented
-    // code below is to be deleted as some time later, when we are certain
-
-    // for(const item of data.cart) {
-    //     const result = await db.collection("products").where("itemID", "==", item.itemID).get();
-    //     // console.log("result", result)
-    //     let itemPrice = 9999;
-    //     result.forEach((doc) => {
-    //         // console.log("parsed int", parseInt(doc.data().itemPrice * 100))
-    //         itemPrice = parseInt(doc.data().itemPrice * 100)   
-    //     })
-    //     // if (itemPrice == 0) {
-    //     //     throw new functions.https.HttpsError('failed-precondition', 'One of the items in your cart does not exist');
-    //     // }
-    //     item.unit_amount = itemPrice;
-    //     // console.log("unit amount", item.unit_amount)
-    // }
-
-
     const itemsToBuy = data.cart.map((item) => {
 
         return {
@@ -84,8 +64,6 @@ exports.createStripeCheckout = functions.https.onCall(async (data, context) => {
             }
         }
     })
-
-    // console.log("items to buy", itemsToBuy)
 
 
     const stripe = require("stripe")(functions.config().stripe.secret_key);
@@ -207,10 +185,8 @@ exports.emailReceipt = functions.https.onCall(async (data, context)=> {
 
 // Unfinished function
 exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
-    console.log("WEBHOOK")
     const stripe = require("stripe")(functions.config().stripe.secret_key);
     const whSecret = functions.config().stripe.payments_webhook_secret;
-    console.log("SECRET");
     let event;
 
     try {
@@ -226,7 +202,6 @@ exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
     
     switch (event.type) {
         case 'checkout.session.completed':
-            console.log("COMPLETED")
             const session = event.data.object;
 
             const paymentID = session.metadata.paymentID;
@@ -267,7 +242,6 @@ exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
                         }
                     }
                 } catch (error) {
-                    console.log(error.message)
                     return res.status(400).send(`Webhook Error: ${error.message}`);
                 }
 
@@ -279,14 +253,13 @@ exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
                 paymentStatus: session.payment_status,
                 shippingInfo: session.shipping,
                 amountTotal: Number((session.amount_total / 100).toFixed(2)),
-                timestamp: db.FieldValue.serverTimestamp(),
+                timestamp: db.ServerValue.TIMESTAMP,
             })
 
             break;
         case 'checkout.session.expired':
             break;
         default:
-            console.log(`Unhandled event type ${event.type}`);
             break;
     }
 

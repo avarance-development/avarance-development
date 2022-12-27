@@ -128,7 +128,6 @@ export default {
       this.price = this.$props.item.itemPrice;
       this.metal = this.$props.item.metalMaterial;
       this.$store.commit("setCurrentItem", this.$props.item)
-      console.log("through prop")
     } else if (this.$store.state.currentItem != null && this.$store.state.currentItem.itemID == this.$props.productId) {
       this.title = this.$store.state.currentItem.itemName;
       this.picArray = this.$store.state.currentItem.itemPictures;
@@ -136,7 +135,6 @@ export default {
       this.itemSizes = this.$store.state.currentItem.itemSizes;
       this.price = this.$store.state.currentItem.itemPrice;
       this.metal = this.$store.state.currentItem.metalMaterial;
-      console.log("through the state")
     } else {
       const docRef = doc(db, 'products', this.$props.productId);
       const currentDoc = await getDoc(docRef);
@@ -147,7 +145,6 @@ export default {
       this.itemSizes = this.$store.state.currentItem.itemSizes;
       this.price = this.$store.state.currentItem.itemPrice;
       this.metal = this.$store.state.currentItem.metalMaterial;
-      console.log("through firebase")
     }
 
     this.picArray.push(`/img/${this.$route.params.category}.jpg`)
@@ -177,7 +174,6 @@ export default {
       this.itemSizes = this.$store.state.currentItem.itemSizes;
       this.price = this.$store.state.currentItem.itemPrice;
       this.metal = this.$store.state.currentItem.metalMaterial;
-      console.log("through firebase")
       this.picArray.push(`/img/${this.$route.params.category}.jpg`)
       this.picArray = this.picArray.filter((imgSrc, index) => this.picArray.indexOf(imgSrc) == index)
     }
@@ -241,7 +237,6 @@ export default {
       }
     },
     async addToCart() {
-      console.log("adding to cart");
       if (this.quantity <= 0) {
         return;
       }
@@ -267,8 +262,6 @@ export default {
         uniqueID: newID,
       });
       this.addedToCart = this.$store.state.message
-      console.log(this.$store.state.cart)
-      console.log(this.addedToCart)
       await setTimeout(() => {
         this.addedToCart = "";
       }, 5000)
@@ -568,6 +561,7 @@ export default {
             height: 87.5%;
             user-select: none;
             opacity: 0.5;
+            cursor: not-allowed;
           }
 
           .label {
@@ -742,6 +736,7 @@ input[type="radio"]::before {
   opacity: 0;
   background-color: rgba(0, 0, 0, 0.35);
   transition: opacity 0.25s ease;
+  cursor: pointer;
 }
 
 input[type="radio"]:checked::before {

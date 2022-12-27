@@ -87,7 +87,6 @@ export default {
     methods: {
         subscribe() {
             if (this.email) {
-                console.log('Subscribed ' + this.email);
                 this.success = true;
                 this.email = '';
             }

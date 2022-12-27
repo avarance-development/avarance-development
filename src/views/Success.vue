@@ -88,7 +88,6 @@ export default {
         this.loading = true;
         const retrieveCustomer = await httpsCallable(functions, 'retrieveCustomer');
         retrieveCustomer({ id: this.$route.params.sessionID }).then(async (result) => {
-            console.log(result)
             this.city = result.data.city;
             this.country = result.data.country;
             this.state = result.data.state;
@@ -112,10 +111,9 @@ export default {
                     cart: this.cart,
                     total: (this.total / 100).toFixed(2),
                 }).then((result) => {
-                    console.log(result)
                     this.canSendReceipt = false;
                 }).catch((err) => {
-                    console.log(err.message)
+                    //
                 })
             }
             this.$store.commit("clearCart");

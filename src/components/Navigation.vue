@@ -4,6 +4,7 @@
       <nav>
           <div class="branding">
             <router-link class="link" :to="{ name: 'Home' }">
+              <!-- <button @click="sessionIDClear">Clear Session ID</button> -->
               <img src="@/assets/logo.png" alt="Logo">
             </router-link>
           </div>
@@ -50,7 +51,7 @@
                         <Saved class="svg-icon"/>
                         <p>Saved Items</p>
                     </router-link>
-                    <div class="admin-link" @click="signOut">
+                    <div class="admin-link logout" @click="signOut">
                         <Exit class="svg-icon"/>
                         <p>Sign Out</p>
                     </div>
@@ -134,7 +135,6 @@ import { auth } from "../firebase/firebaseInit.js"
 import Loading from "../components/Loading.vue"
 
 export default {
-    // NEED TO MAKE THE OVERLAY ON ITEMS THAT AREN'T IN STOCK
     name: "Navigation",
     data() {
         return {
@@ -213,7 +213,6 @@ export default {
             }
         },
         signOut() {
-            console.log("WHAT")
             signOut(auth);
             window.location.reload();
         },
@@ -225,6 +224,9 @@ export default {
                 this.loading = true;
                 this.$store.dispatch('checkout');
             }
+        },
+        sessionIDClear() {
+            this.$store.commit("clearSessionID")
         },
     }
 }
@@ -327,6 +329,7 @@ header {
                     background-color: #505050;
                     box-shadow: 0 4px 8px -1px rgba(0,0,0,0.2), 0 2px 4px -1px rgba(0,0,0,0.7);
                     transition: 0.1s ease-in-out;
+                    user-select: none;
 
                     p:first-child {
                         margin-top: 20px;
@@ -366,6 +369,10 @@ header {
 
                     .admin-link:last-child {
                         margin-bottom: 10px;
+                    }
+
+                    .logout {
+                        cursor: pointer;
                     }
 
                 }

@@ -74,15 +74,10 @@ export default {
     },
     computed: {
         category() {
-            console.log(this.$route)
-            console.log(this.$route.params.category)
             const lastword = this.$route.params.category.split(' ').pop().toLowerCase();
             return lastword;
         }
     },
-    // created() {
-    //     paymentHistory
-    // }
 }
 </script>
 

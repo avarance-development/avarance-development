@@ -28,11 +28,9 @@ export default {
     },
     methods: {
         async addAdmin() {
-            console.log('add admin running' + this.adminEmail)
             this.loading = true;
             const addAdmin = await httpsCallable(functions, 'addAdminRole');
             addAdmin({ email: this.adminEmail }).then((result) => {
-                console.log(result)
                 this.message = result.data.message
             })
             this.loading = false;
